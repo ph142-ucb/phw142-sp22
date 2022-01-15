@@ -1,4 +1,4 @@
-Welcome to WPH 142: Introduction to Probability and Statistics in Biology and Public Health!
+Welcome to PHW142: Introduction to Probability and Statistics in Biology and Public Health!
 
 <hr>
 
@@ -26,4 +26,4 @@ the class), you can take advantage of any of the following resources:
 - Emailing <staff email>
 
 Looking forward to the semester we have together,
-Your WPH 142 Teaching Staff~
+Your PHW142 Teaching Staff~
