@@ -1,0 +1,351 @@
+---
+title: "Problem Set 1: Manipulation of mammalian sleep data"
+author: "Your name and student ID"
+date: "Today's date"
+output: pdf_document
+---
+
+
+### Instructions 
+* Solutions will be released on Tuesday, January 25th.
+* This semester, problem sets are for practice only and will not be turned in for marks.
+
+```{r setup, include = FALSE}
+## Run this chunk of code to load the autograder library!
+knitr::opts_chunk$set(echo = TRUE)
+library(testthat)
+```
+
+Helpful hints:
+
+- Every function you need to use was taught during lecture! So you may need to 
+revisit the lecture code to help you along by opening the relevant files on Datahub. 
+Alternatively, you may wish to view the code in the condensed PDFs posted 
+on the course website. Good luck!
+
+- Knit your file early and often to minimize knitting errors! If you copy and 
+paste code for the slides, you are bound to get an error that is hard to 
+diagnose. Typing out the code is the way to smooth knitting! We recommend 
+knitting your file each time after you write a few sentences/add a new code 
+chunk, so you can detect the source of knitting errors more easily. This will 
+save you and the GSIs from frustration! 
+
+- It is good practice to not allow your code to run off the page. To
+avoid this, have a look at your knitted PDF and ensure all the code fits in the 
+file. If it doesn't look right, go back to your .Rmd file and add spaces (new lines) using the return or enter key so that the code runs onto the next line.
+
+\newpage
+
+--------------------------------------------------------------------------------
+
+Begin by knitting this document by pushing the "Knit" button above. As you fill 
+in code and text in the document, you can re-knit (push the button again) and 
+see how the document changes. It is important to re-knit often, because if there
+is any error in your code, the file will not generate a PDF, so our advice is to
+knit early and often!
+
+### Using `dplyr` to investigate sleep times in mammals
+
+The data file `sleep.csv` contains the sleep times and weights for a set of mammals. 
+Hit the green arrow icon in the line below to execute the lines of code in 
+the code chunk, or execute them line by line by placing your cursor on the first 
+line and hitting cmd + enter on Mac or ctrl + enter on PC. 
+
+```{r import-and-save-data}
+library(dplyr)
+library(readr)
+sleep <- read_csv("data/sleep.csv")
+```
+
+- The `library` command loads the library `dplyr` into memory. 
+- The `readr` library contains functions to read in the dataset.
+- The `dplyr` library contains functions we will use to manipulate data.
+
+Notice that an object called `sleep` appears in the Environment tab under "Data". 
+
+\newpage
+
+**1. [2 points] Use four useful functions discussed in lecture to examine the sleep dataset:**
+
+```{r four-functions}
+# Text inside a code chunk that begins with "#" is called a comment. 
+# We sometimes use comments to explain code to you in plain English.
+# Write your four functions below these comments, replacing the placeholder
+# text "<<<<YOUR CODE HERE>>>>". Remember, code does *not* begin with a "#"
+
+"<<<<YOUR CODE HERE>>>>"
+"<<<<YOUR CODE HERE>>>>"
+"<<<<YOUR CODE HERE>>>>"
+"<<<<YOUR CODE HERE>>>>"
+
+# Then, assign p1 to a vector of your function names, in alphabetical order.
+# For example, assigning p0 to a vector of fruits looks like this:
+# p0 <- c("apple", "banana", "orange")
+
+p1 <- NULL # YOUR CODE HERE
+p1
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p1.R")
+```
+
+\newpage
+
+Description of the variables found in the sleep dataset:
+
+| Column name	| Description |
+|-------------|-------------|
+|name	|common name|
+|genus	|taxonomic rank|
+|vore	|carnivore, omnivore or herbivore?|
+|order	| taxonomic rank|
+|conservation	|the conservation status of the mammal|
+|sleep_total|	total amount of sleep, in hours|
+|sleep_rem |	Rapid eye movement (REM) sleep, in hours |
+|sleep_cycle|	length of sleep cycle, in hours|
+|awake|	amount of time spent awake, in hours|
+|brainwt|	brain weight in kilograms|
+|bodywt|	body weight in kilograms|
+
+**2. [2 points] Write code to select a set of columns. Specifically select the `awake`, `brainwt`, and `bodywt` columns. Assign this smaller dataset to a dataframe called `sleep_small`.**
+
+```{r}
+sleep_small <- NULL # YOUR CODE HERE
+sleep_small
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p2.R")
+```
+
+\newpage
+
+**3. [1 point] To select a range of columns by name, use the ':' (colon) operator. Redo the selection for question 1, but use the colon operator. Assign this to `sleep_small_colon`. Note that this returns the same data frame as the previous problem, but is not recommended in practice because it depends on the ordering of the columns and isn't explicit in the columns that are selected, whereas selecting columns by name offers much higher readability for someone else looking at your code later on.**
+
+```{r}
+sleep_small_colon <- NULL # YOUR CODE HERE
+sleep_small_colon
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p3.R")
+```
+
+\newpage
+
+**4. [1 point] Select all of the columns except for the `vore` variable from the original `sleep` dataset. Assign this to `sleep_no_vore`.**
+
+```{r}
+sleep_no_vore <- NULL # YOUR CODE HERE
+sleep_no_vore
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p4.R")
+```
+
+\newpage
+
+**5. [1 point] Run the following chunk of code.**
+
+```{r select-code-partIV}
+select(sleep, starts_with("sl"))
+```
+
+**What does it return? Copy your choice and assign it to `p5`.**
+```{r}
+# p5 <- "returns the number of columns that start with sl"
+# p5 <- "returns all columns that start with sl"
+# p5 <- "returns all rows that start with sl"
+# p5 <- "returns all animals whose names start with sl""
+```
+
+```{r}
+p5 <- NULL # YOUR CHOICE HERE
+p5
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p5.R")
+```
+
+\newpage
+
+**6. [1 point] Rewrite the chunk of code that selects columns starting with "sl" (in question 5) using the pipe operator. Assign this to `sleep_sl`.**
+
+```{r}
+sleep_sl <- NULL # YOUR CODE HERE
+sleep_sl
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p6.R")
+```
+
+\newpage
+
+**7. [1 point] Filter the original `sleep` dataset to include rows with mammals that sleep a total of more than 16 hours. Assign this to `sleep_over16`.**
+
+```{r}
+sleep_over16 <- NULL # YOUR CODE HERE
+sleep_over16
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p7.R")
+```
+
+\newpage
+
+**8. [2 points] Filter the rows to include mammals that sleep a total of more than 16 hours and have a body weight of greater than 1 kilogram. Assign this to `sleep_mammals`.**
+
+```{r}
+sleep_mammals <- NULL # YOUR CODE HERE
+sleep_mammals
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p8.R")
+```
+
+\newpage
+
+**9. [1 point] Suppose you are specifically interested in the sleep times of horses and giraffes. Use the original `sleep` dataset and assign `sleep_hg` to a dataframe that only includes horses and giraffes.**
+
+```{r}
+sleep_hg <- NULL # YOUR CODE HERE
+sleep_hg
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p9.R")
+```
+
+\newpage
+
+**10. [1 point] Order the original dataset from shortest sleep time to longest sleep time. Assign this to `sleep_time`.**
+
+```{r}
+sleep_time <- NULL # YOUR CODE HERE
+sleep_time
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p10.R")
+```
+
+
+\newpage
+
+**11. [1 point] Now order the original dataset from longest to shortest sleep time. Assign this to `sleep_rev`.**
+
+```{r}
+sleep_rev <- NULL # YOUR CODE HERE
+sleep_rev
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p11.R")
+```
+
+\newpage
+
+**12. [2 points] Suppose you are interested in the order of sleep time (longest to shortest), but according to whether the animal is a carnivore, herbivore, or omnivore. Write the code that orders sleep time according to the animal's type of `-vore`. Call this `sleep_time_rev`.**
+
+```{r}
+sleep_time_rev <- NULL # YOUR CODE HERE
+sleep_time_rev
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p12.R")
+```
+
+\newpage
+
+**13. [1 point] Create a new column called `rem_proportion` which is the ratio of rem sleep to total amount of sleep. Assign this new dataframe to `sleep_ratio`.**
+
+```{r}
+sleep_ratio <- NULL # YOUR CODE HERE
+sleep_ratio
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p13.R")
+```
+
+\newpage
+
+**14. [1 point] Add another column to the `sleep_ratio` dataset called `bodywt_grams` which is the bodywt column in grams. Call this new dataframe `sleep_bw`.**
+
+```{r}
+sleep_bw <- NULL # YOUR CODE HERE
+sleep_bw
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p14.R")
+```
+
+\newpage
+
+**15. [1 point] Calculate the average sleep time across all the animals in the dataset using a `dplyr` function and label this value `sleep_avg`. Assign this one value to a dataframe called `avg_sleep_time`.**
+
+```{r}
+avg_sleep_time <- NULL # YOUR CODE HERE
+avg_sleep_time
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p15.R")
+```
+
+\newpage
+
+**16. [2 points] Calculate the average sleep time for each type of "-vore". Hint: you'll need to use two `dplyr` functions! Name the columns of the dataframe `vore` and `sleep_avg` and assign the dataframe to `avg_by_vore`.**
+
+```{r}
+avg_by_vore <- NULL # YOUR CODE HERE
+avg_by_vore
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p16.R")
+```
+
+
+## END
+
