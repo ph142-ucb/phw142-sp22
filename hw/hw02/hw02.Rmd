@@ -1,0 +1,365 @@
+---
+title: "Problem Set 2: Summarize global cesarean delivery rates and GDP across 137 countries"
+author: "Your name and student ID"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output: pdf_document
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(testthat)
+```
+
+### Instructions 
+* Solutions will be released on Tuesday, February 2st.
+* This semester, problem sets are for practice only and will not be turned in for marks.
+
+Helpful hints:
+
+- Every function you need to use was taught during lecture! You may need to revisit the lecture code to help you along by opening the relevant files on Datahub. Alternatively, you may wish to view the code in the condensed PDFs posted on the course website. Good luck!
+
+- Knit your file early and often to minimize knitting errors! If you copy and paste code for the slides, you are bound to get an error that is hard to diagnose. Typing out the code is the way to smooth knitting! We recommend knitting your file each time after you write a few sentences/add a new code chunk, so you can detect the source of knitting errors more easily. This will save you and the GSIs from frustration! 
+
+- If your code runs off the page of the knitted PDF, be sure to fix this! If it doesn't look right, go back to your .Rmd file and add spaces (new lines) using the return or enter key so that the code runs onto the next line.
+
+\newpage
+
+--------------------------------------------------------------------------------
+
+# Summarizing global cesarean delivery rates and GDP across 137 countries
+
+### Introduction 
+
+Recall from this week's lab that we constructed bar charts and histograms to explore a data set that looked at global rates of cesarean delivery and GDP. If you need a refresher, you can view your knitted file from lab and remind yourself about what you found. 
+
+In this week's problem set, you will describe these distributions using numbers. You will investigate the **mean** and **median** of the distribution of GDP. You will also examine the distribution of cesarean delivery separately for countries of varying income levels. Lastly, you will describe the **spread** of the distributions using **quartiles** and make a **box plot**. 
+
+Execute this code chunk to load the required libraries:
+```{r load-libraries}
+library(readr)
+library(dplyr)
+library(ggplot2)
+```
+
+Just like in lab, read in the data that is stored as a .csv file and assign it to an object called `CS_data`. We will also use dplyr's `mutate()` to create the new cesarean delivery variable that ranges between 0 and 100: 
+
+```{r read-in-the-data}
+CS_data <- read_csv("data/cesarean.csv")
+
+# The code below reorders the Factor variable `Income_Group` in the 
+# order specified in this function. This will affect the order the ggplot
+# panels are shown in question 8 when we use `facet_wrap()`.
+CS_data$Income_Group <- forcats::fct_relevel(CS_data$Income_Group, 
+                                            "Low income", "Lower middle income", 
+                                            "Upper middle income", "High income: nonOECD", 
+                                            "High income: OECD")
+
+CS_data <- CS_data %>% mutate(CS_rate_100 = CS_rate*100)
+```
+
+\newpage
+
+**1. [1 point] Fill in the blanks indicated by "----" by saving the answer to each blank in the code chunk below. Make sure you capitalize correctly, as R is case-sensitive.**
+
+The function `mutate()` takes the old variable called **--(aa)--** and multiplies it by **--(bb)--** to make a new variable called **--(cc)--**. 
+
+```{r p1}
+aa <- 'your answer here'
+bb <- 'your answer here'
+cc <- 'your answer here'
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/q1.R")
+```
+
+\newpage
+
+**Investigate what would have happened had we not assigned the data using `<-` to `CS_data`. Re-run the code without the assignment operator and see what happens.**
+
+```{r no-assignment-example}
+# First, let's re-read in the data as we did in the previous chunk
+CS_data <- read_csv("data/cesarean.csv")
+CS_data$Income_Group <- forcats::fct_relevel(CS_data$Income_Group, 
+                                            "Low income", "Lower middle income", 
+                                            "Upper middle income", "High income: nonOECD", 
+                                            "High income: OECD")
+
+
+# Now, we try mutating again without the re-assignment to CS_data
+CS_data %>% mutate(CS_rate_100 = CS_rate*100) 
+
+# check the variables in CS_data
+names(CS_data)
+```
+
+Did `CS_rate_100` get added to the data set? No. You can tell by using 
+`head(CS_data)` to view the first few rows and notice that the variable hasn't been added. This is because when we don't assign the output to anything, it just prints it out for us to see. Nothing is saved. So, we want to save the output by assigning the result of the code to an object, which is `CS_data` in this case. In general, you want to use **new object names** at every significant step in your analysis as you work with your data, so that you have access to the specific data at all of those significant stages. However, if you are performing multiple small operations on the same dataset, you can overwrite the original object since you know you won't be needing the in-between steps. See the example below. 
+
+```{r overwrite-original-data}
+# This overwrites the original CS_data object
+CS_data <- CS_data %>% mutate(CS_rate_100 = CS_rate*100)
+```
+
+\newpage
+
+### GDP: Summarizing measures of centrality
+
+Recall your histogram of GDP from this week's lab:
+```{r histogram-GDP-2006-lab}
+ggplot(data = CS_data, aes(x = GDP_2006)) +
+  geom_histogram(col = "white", fill = "sienna2", binwidth = 1000) + 
+  xlab("GDP in 2006") +
+  theme_minimal() 
+```
+
+**2. [1 point] Describe the shape of this distribution. Is it "skewed left", "skewed right", "symmetric", or "bimodal"? Uncomment one of the possible choices.**
+
+```{r p2}
+# p2 <- 'skewed left'
+# p2 <- 'skewed right'
+# p2 <- 'symmetric'
+# p2 <- 'bimodal'
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/q2.R")
+```
+
+\newpage
+
+**3. [1 point] Based on your answer, will the mean be approximately the "same", "larger than", or "smaller than" the median? Uncomment one of the possible choices.**
+
+```{r p3}
+# p3 <- 'same'
+# p3 <- 'larger than'
+# p3 <- 'smaller than'
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/q3.R")
+```
+\newpage
+
+**4. [3 points] Describe, in words, how the mean and median are calculated.**
+
+_Type your answer here, replacing this text._
+
+
+To calculate the mean and median in R, we can use the `summarize()` function from the `dplyr` package. The `summarize()` function is used any time we want to take a variable and use one number to summarize something about it, like with the mean or median. Below is the code to summarize the mean of all countries' `GDP_2006` and to print it to the screen. In the code, we name the mean `mean_GDP` and output the result:
+
+```{r summarize-mean}
+GDP_summary <- CS_data %>% summarize(mean_GDP = mean(GDP_2006))
+GDP_summary
+```
+\newpage
+
+**5. [1 point] Extend the above code to also summarize the median. Call the median summary `median_GDP`. Assign this summary to a dataframe called `GDP_summary` (it will overwrite the previous version of the dataframe). Then type `GDP_summary` on its own line to see your results.**
+
+```{r summarize-median}
+GDP_summary <- NULL # YOUR CODE HERE
+GDP_summary
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/q5.R")
+```
+
+\newpage
+
+**6. [2 points] `geom_vline()` can be used to add the mean and the median to the histogram shown above. This `geom_vline()` adds a vertical line to the graph. You need to specify where to add the line by passing it an "x-intercept" argument. Remove the comments (i.e., the three "#") from the code below and update the `geom_vline()` code to plot lines at the mean and median by telling it the mean and median estimates. The argument `lty=1` (line type) will plot a solid line and `lty=2` will plot a dashed line.**  
+
+*For the purposes of this question, please assign the x-intercept to a plain NUMERIC value, not a variable or expression.*
+
+```{r add-mean-med-plot}
+p6 <- ggplot(data = CS_data, aes(x = GDP_2006)) +
+        geom_histogram(col = 'white', fill = 'sienna2') + 
+        xlab('GDP in 2006') +
+        theme_minimal() #+
+        #geom_vline(aes(xintercept = ), lty=1) + 
+        #geom_vline(aes(xintercept = ), lty=2) 
+p6
+
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/q6.R")
+```
+
+\newpage
+
+### Summarizing the distribution of cesarean delivery rates
+
+Recall the distribution of cesarean delivery rates across countries:
+
+```{r CS-histogram}
+ggplot(data = CS_data, aes(x = CS_rate_100)) +
+  geom_histogram(binwidth = 4, col = "white", fill = "sienna2") + 
+  xlab("Cesarean delivery rate (%)") +
+  theme_minimal()
+```
+\newpage
+
+**7. [1 point] Describe the shape of this distribution. Is it "skewed left", "skewed right", "symmetric", or "bimodal"? Uncomment one of the possible selections.**
+
+```{r p7}
+# p7 <- 'skewed left'
+# p7 <- 'skewed right'
+# p7 <- 'symmetric'
+# p7 <- 'bimodal'
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/q7.R")
+```
+
+\newpage
+
+**There appears to be multiple peaks in the cesarean delivery rate histogram which may point to another variable influencing the distribution. We can make a separate histogram for each income group using the `facet_wrap()` function.**
+
+**8. [1 point] Extend the ggplot code given below using the `facet_wrap()` statement to make a separate histogram for each level of the `Income_Group` variable.**
+
+```{r CS-histogram-by-income}
+p8 <- ggplot(data = CS_data, aes(x = CS_rate_100)) +
+        geom_histogram(binwidth = 6, col = 'white', fill = 'sienna2') + 
+        xlab('Cesarean delivery rate (%)') +
+        theme_minimal() 
+p8
+
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/q8.R")
+```
+
+\newpage
+
+**9. [2 points] Based on both this plot and the previous plot, describe why the data had two peaks.**
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+**10. [1 point] Why might lower income countries have lower rates of cesarean delivery?**
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+**11. [2 points] Calculate the `mean_CS` and `median_CS` of `CS_rate_100` using only one `summarize()` command. Assign this summary to a dataframe called `CS_summary` and then print the results by typing `CS_summary`.**
+
+```{r calc-mean-cs}
+CS_summary <- NULL # YOUR CODE HERE
+CS_summary
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/q11.R")
+```
+
+\newpage
+
+## Measures of variation
+
+**12. [2 points] Use `ggplot2` to make a boxplot of the distribution of `CS_rate_100`.**
+
+```{r p12}
+p12 <- NULL # YOUR CODE HERE
+p12
+
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/q12.R")
+```
+
+\newpage
+
+Recall that the box plot summarizes the distribution in five numbers: the minimum, the first quartile (with 25% of the data below it), the median, the third quartile (with 75% of the data below it), and the maximum. Each of these numbers has at least one corresponding R function:
+
+| Number          | R function                                                   |
+|-----------------|--------------------------------------------------------------|
+| Minimum         | `min(variable)`                                              |
+| First quartile  | `quantile(variable, probs = 0.25)`                           |
+| Median          | `median(variable)` or `quantile(variable, probs = 0.5)`      |
+| Third quartile  | `quantile(variable, probs = 0.75)`                           |
+| Maximum         | `max(variable)`                                              |
+
+**13. [2 points] Use a combination of `dplyr`'s `summarize` function and the above functions to compute the five number summary of `CS_rate_100`. Assign the summary to the name `five_num_summary`, which should contain values for `min`, `Q1`,`median`, `Q3`, and `max` (in this order and with these names).**
+
+```{r five-number-summary}
+five_num_summary <- NULL # YOUR CODE HERE
+five_num_summary
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/q13.R")
+```
+
+\newpage
+
+Double check that `geom_boxplot()` is making the box plot correctly. You can do this by adding horizontal lines to the plot at each number in your five number summary using `geom_hline()`. Because horizontal lines intercept the y-axis, `geom_hline()` requires the `yintercept` argument that you can set to each number in your summary. 
+
+**14. [2 points] The code below includes one horizontal line at the minimum value shown in blue. Add the rest of the lines in the order denoted in question 13.**
+
+```{r add-horizontal-lines-to-boxplot}
+p14 <- ggplot(data = CS_data, aes(y = CS_rate_100)) +
+          geom_boxplot(col = 'black', fill = 'sienna2') +
+          theme_minimal() + 
+          geom_hline(aes(yintercept = 0.4), col = 'blue')
+          # add more geom_hlines 
+p14
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/q14.R")
+```
+
+\newpage
+
+**15. [4 points] Run the following code that adds two points to `CS_data`, makes a new dataset called `CS_data_plus_2`, and redraws the box plot. How did the box plot change? Perform a calculation to justify why it changed. What are the newly-added features on the plot called?**
+
+```{r add-points, fig.width = 5}
+out_data <- tibble::tribble(
+  ~Country_Name, ~CS_rate_100,
+  "Point 1", 90,
+  "Point 2", 60
+)
+
+CS_data_plus_2 <- dplyr::full_join(CS_data, out_data)
+
+ggplot(data = CS_data_plus_2, aes(y = CS_rate_100)) +
+  geom_boxplot(col = "black", fill = "sienna2") 
+```
+
+```{r calculations_new_IQR}
+# YOUR CALCULATIONS HERE
+
+# YOUR CODE HERE
+```
+
+_Type your answer here, replacing this text._
+
+## END
