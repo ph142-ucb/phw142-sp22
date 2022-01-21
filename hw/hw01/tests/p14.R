@@ -19,21 +19,21 @@ name: p14
 "
 
 test_that("p14a", {
-  expect_true(is.data.frame(sleep_bw))
-  print("p14a: Checking `sleep_bw` is a dataframe")
+  expect_true(is.data.frame(sleep_r_bw))
+  print("p14a: Checking sleep_r_bw is a dataframe")
 })
 
 test_that("p14b", {
   expect_true(ncol(sleep_r_bw) == 13)
-  print("p14b: Checking sleep_bw has 13 columns")
+  print("p14b: Checking sleep_r_bw has 13 columns")
 })
 
 test_that("p14c", {
   expect_true(nrow(sleep_r_bw) == 83)
-  print("p14c: Checking sleep_bw has 83 rows")
+  print("p14c: Checking sleep_r_bw has 83 rows")
 })
 
 test_that("p14d", {
-  expect_true(all.equal(sleep_bw$bodywt_grams[1], 50000, 0.01))
+  expect_true(all.equal(sleep_r_bw$bodywt_grams[1], 50000, 0.01))
   print("p14c: Checking bodyweight is in grams")
 })
