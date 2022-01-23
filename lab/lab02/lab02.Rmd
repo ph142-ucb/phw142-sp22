@@ -14,7 +14,7 @@ library(testthat)
 ```
 
 ### Instructions 
-* Due date: Tuesday, February 1st at 10:00pm PST with 2 hour grace period.
+* Due date: Monday, January 31st at 11:59pm PST.
 * Late penalty: 50% late penalty if submitted within 24 hours of due date, no marks for assignments submitted thereafter.
 * This assignment is graded on **correct completion**, all or nothing. You must pass all public tests and submit the assignment for credit.
 * Submission process: Follow the submission instructions on the final page. Make sure you do not remove any `\newpage` tags or rename this file, as this will break the submission.
@@ -345,7 +345,7 @@ Once you have checked these items, you can proceed to submit your assignment.
 1. Click on the **Terminal** tab in the pane below.
 2. Copy-paste the following line of code into the terminal and press enter.
 
-cd; cd ph142-sp22/lab/lab02; python3 turn_in.py
+cd; cd phw142-sp22/lab/lab02; python3 turn_in.py
 
 3. Follow the prompts to enter your Gradescope username and password.
 4. If the submission is successful, you should see "Submission successful!" appear as the output. **Check your submission on the Gradescope website to ensure that the autograder worked properly and you received credit for your correct answers. If you think the autograder is incorrectly grading your work, please post on piazza!**
