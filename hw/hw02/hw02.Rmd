@@ -11,7 +11,7 @@ library(testthat)
 ```
 
 ### Instructions 
-* Solutions will be released on Tuesday, February 2st.
+* Solutions will be released on Tuesday, February 1st.
 * This semester, problem sets are for practice only and will not be turned in for marks.
 
 Helpful hints:
