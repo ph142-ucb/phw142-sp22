@@ -1,0 +1,199 @@
+---
+title: "Lab 3: Relationship between global cesarean delivery rates and GDP"
+author: "Your name and student ID"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output: pdf_document
+---
+
+
+### Instructions 
+* Due date: Monday, February 7 by 11:59pm PT.
+* Late penalty: 50% late penalty if submitted within 24 hours of due date, no marks for assignments submitted thereafter.
+* This assignment is graded on **correct completion**, all or nothing. You must pass all public tests and submit the assignment for credit.
+* Submission process: Follow the submission instructions on the final page. Make sure you do not remove any `\newpage` tags or rename this file, as this will break the submission.
+
+
+Start by loading the required libraries, reading in the data and adding on a variable:
+
+```{r initial-setup}
+library(dplyr)
+library(ggplot2)
+library(readr)
+library(broom)
+library(testthat)
+
+CS_data <- read_csv("data/cesarean.csv")
+
+# The code below re-orders the variable Income_Group in the specified order.
+# Note that it *does not* change the order of the data frame (like arrange() does)
+# Rather, it specifies the order the data will be plotted. 
+# This will make more sense when we plot the data using Income_Group, and then again using Income_Group_order
+CS_data$Income_Group <- forcats::fct_relevel(CS_data$Income_Group, 
+                                            "Low income", "Lower middle income", 
+                                            "Upper middle income", "High income: nonOECD", 
+                                            "High income: OECD")
+
+CS_data <- CS_data %>% mutate(CS_rate_100 = CS_rate*100)
+```
+
+\newpage 
+
+**1. [1 point] Make a scatter plot between `CS_rate_100` and `GDP_2006`.**
+
+```{r scatterplot}
+p1 <- NULL # YOUR CODE HERE
+p1
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p1.R")
+```
+
+In your plot, you might notice that many of the points are condensed towards the lower left corner. And you might recall from the lab and assignment that the distributions of both cesarean delivery rate and GDP covered a wide range of values. Both of these variables are good candidates for log transformations to spread out the range of data at the lowest levels.
+
+\newpage
+
+**2. [1 point] Using the `mutate()` function, add two new logged variables to the `CS_data` dataset and assign this new dataset to `CS_data_log`. Call the variables `log_CS` and `log_GDP`. Use base e, also known as the natural logarithm, to create the logged variables.**
+
+```{r create-logged variables}
+CS_data_log <- NULL # YOUR CODE HERE
+CS_data_log
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p2.R")
+```
+\newpage
+
+**3. [1 point] Remake the scatter plot using the logged variables.**
+
+```{r scatter-logged}
+p3 <- NULL # YOUR CODE HERE
+p3
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p3.R")
+```
+
+\newpage
+
+**4. [1 point] A `geom` that you have not yet learned is `geom_smooth()`. This geom can fit a curve to the data. Extend your `ggplot()` code by adding geom_smooth() to it.**
+
+```{r add-smoothed-curve}
+p4 <- NULL # YOUR CODE HERE
+p4
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p4.R")
+```
+
+**5. Does the relationship between logged GDP and logged CS look linear?**
+
+_Type your answer here, replacing this text._
+
+\newpage 
+
+**6. [1 point] Modify your scatter plot by linking the color of the points to the variable`Income_Group`.**
+
+```{r color-points-by-income-group}
+p6 <- NULL # YOUR CODE HERE
+p6
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p6.R")
+```
+Does a linear relationship hold for any part of the data? What pattern do you notice?
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+**7. [1 point] For this lab, we would like to use linear regression. To do this, use a `dplyr` function to make a new dataset called `CS_data_sub` that only contains the low-, lower-middle, and upper-middle income countries (hint: You might want to look at the data to see exactly what these levels are called in the data set).**
+
+```{r subset-low-mid-income}
+CS_data_sub <- NULL # YOUR CODE HERE
+CS_data_sub
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p7.R")
+```
+
+\newpage
+
+**8. [1 point] Remake the last scatter plot, this time using `CS_data_sub` to see if the relationship between the logged variables looks approximately linear.**
+
+```{r scatter-low-mid}
+p8 <- NULL # YOUR CODE HERE
+p8
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p8.R")
+```
+
+**9. [1 point] Given that the relationship is approximately linear, use linear regression to model the relationship between `log_CS` as the response variable and `log_GDP` as the explanatory variable. Don't forget to specify the correct dataset!**
+
+```{r linear-model}
+p9 <- NULL # YOUR CODE HERE
+p9
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p9.R")
+```
+
+**10. Interpret the slope estimate in the context of the problem.**
+
+_Type your answer here, replacing this text._
+
+
+**11. Estimate what the cesarean delivery rate would be for a country with a GDP of 2000. Outline the steps you take to calculate your answer and provide an interpretation. Round your final answer to one decimal place.**
+
+_Type your answer here, replacing this text._
+
+**12. Is it appropriate to use the model to predict the cesarean delivery rate for a country with a GDP of 50,000? Why or why not? Based on the relationship in the full dataset, would you expect the linear model to over- or under-predict?**
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+### Submission
+
+For assignments in this class, you'll be submitting using the **Terminal** tab in the pane below. In order for the submission to work properly, make sure that:
+
+1. Any image files you add that are needed to knit the file are in the `src` folder and file paths are specified accordingly.
+2. You **have not changed the file name** of the assignment.
+3. The file knits properly.
+
+Once you have checked these items, you can proceed to submit your assignment.
+
+1. Click on the **Terminal** tab in the pane below.
+2. Copy-paste the following line of code into the terminal and press enter.
+
+cd; cd phw142-sp22/lab/lab03; python3 turn_in.py
+
+3. Follow the prompts to enter your Gradescope username and password.
+4. If the submission is successful, you should see "Submission successful!" appear as the output. **Check your submission on the Gradescope website to ensure that the autograder worked properly and you received credit for your correct answers. If you think the autograder is incorrectly grading your work, please post on piazza!**
+5. If the submission fails, try to diagnose the issue using the error messages--if you have problems, post on Piazza under the post "Datahub Issues".
+
+The late policy will be strictly enforced, **no matter the reason**, including submission issues, so be sure to submit early enough to have time to diagnose issues if problems arise.
