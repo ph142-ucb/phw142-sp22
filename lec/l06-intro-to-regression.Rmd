@@ -1,83 +1,12 @@
 ---
 title: "L06: Intro to Linear Regression "
-output:
-  beamer_presentation:
-    slide_level: 3
-  ioslides_presentation: default
-  slidy_presentation: default
-header-includes:
-- \usetheme{Goettingen}
-- \renewcommand{\textbf}{\structure}
-- \renewcommand{\mathbf}{\structure}
-- \addtobeamertemplate{navigation symbols}{}{ \usebeamerfont{footline} }
-- \addtobeamertemplate{navigation symbols}{}{ \usebeamercolor[fg]{footline} }
-- \addtobeamertemplate{navigation symbols}{}{ \insertframenumber/\inserttotalframenumber
-  }
-- \usepackage[os=win]{menukeys}
-- \usepackage{soul}
-- \usepackage{xcolor}
-- \usepackage{caption}
-- \usepackage[os=win]{menukeys}
-- \usepackage{copyrightbox}
-classoption: aspectratio=169
+
 ---
 
 <!-- libraries -->
 ```{r,include=FALSE,purl=FALSE}
 library(knitr) # for include_graphics() 
 library(dplyr)
-```
-
-<!-- define default size for R graphics -->
-```{r,include=FALSE,purl=FALSE}
-outputFormat<-opts_knit$get('rmarkdown.pandoc.to')
-if(outputFormat=="beamer"){
-  opts_chunk$set(fig.width=6,fig.height=4)
-}
-```
-
-<!-- define function for external images -->
-```{r,include=FALSE,purl=FALSE}
-image<-function(ff,ss,cc=NULL,ll=NULL){
-  if(is.null(cc)){
-    paste('\\centering','\n',
-          '\\includegraphics[scale=',ss,']{',ff,'}',
-          sep='')
-  } else {
-    paste('\\centering','\n',
-          '\\copyrightbox[b]{',
-          '\\includegraphics[scale=',ss,']{',ff,'}',
-          '}{\\raggedleft{\\tiny \\href{',ll,'}{',cc,'}}}',
-          sep='')    
-  }
-}
-```
-
-<!-- define function for links -->
-```{r,include=FALSE,purl=FALSE}
-link<-function(tt,ll){
-  paste('[\\textcolor[HTML]{ffa328}{\\ul{',tt,'}}]','(',ll,')',sep='')
-}
-```
-
-
-## Statistics is Everywhere
-
-### Excercise and the Brain
-
-![](excercisebrain.png)
-
-### Excercise and the Brain
-
-- from *`r link('The New York Times','https://well.blogs.nytimes.com/2016/02/17/which-type-of-exercise-is-best-for-the-brain/')`*, February 2016:
-
-> "Some forms of exercise may be much more effective than others at bulking up the brain, according to a remarkable new study in rats. For the first time, scientists compared head-to-head the neurological impacts of different types of exercise: running, weight training and high-intensity interval training. The surprising results suggest that going hard may not be the best option for long-term brain health "
-
-
-### Excercise and the Brain
-- from *`r link('The Journal of Physiology','J Physiol 594.7 (2016) pp 1855–1873')`*
-```{r, out.width="80%", echo=F}
-knitr::include_graphics("runrat.PNG")
 ```
 
 
@@ -701,11 +630,4 @@ In this course, we don't have time to go into methods that adjust for multiple v
 However, know that causality can be studied using observational data and relies on clever study 
 designs and oftentimes on advanced methods. 
 
-### Comic Relief
-
-From xkcd.com
-
-```{r, out.width="80%", echo=F}
-knitr::include_graphics("rexthor.png")
-```
 
