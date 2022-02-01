@@ -1,25 +1,6 @@
 ---
 title: "L08: Samples and Observational studies"
-output:
-  beamer_presentation:
-    slide_level: 3
-  ioslides_presentation: default
-  slidy_presentation: default
-header-includes:
-- \usetheme{Goettingen}
-- \renewcommand{\textbf}{\structure}
-- \renewcommand{\mathbf}{\structure}
-- \addtobeamertemplate{navigation symbols}{}{ \usebeamerfont{footline} }
-- \addtobeamertemplate{navigation symbols}{}{ \usebeamercolor[fg]{footline} }
-- \addtobeamertemplate{navigation symbols}{}{ \insertframenumber/\inserttotalframenumber
-  }
-- \usepackage[os=win]{menukeys}
-- \usepackage{soul}
-- \usepackage{xcolor}
-- \usepackage{caption}
-- \usepackage[os=win]{menukeys}
-- \usepackage{copyrightbox}
-classoption: aspectratio=169
+
 ---
 
 <!-- libraries -->
@@ -60,47 +41,7 @@ link<-function(tt,ll){
 }
 ```
 
-## Statistics is Everywhere
 
-### Statistics is Everywhere
-
-```{r hbr, echo=F, out.width = "60%"}
-knitr::include_graphics("HBRreviewbias.png")
-```
-
-### Statistics is Everywhere
-- from *`r link('Harvard Buisness Review','https://hbr.org/2018/03/online-reviews-are-biased-heres-how-to-fix-them')`*, March 2018:
-
-> **Online reviews are a powerful tool for sharing information at scale. But it’s important to remember the source — many online reviews today are from those who’ve voluntarily decided to share opinions, giving a distorted view of products, services and companies.**
-
-
-### Statistics is Everywhere
-- What happens to the distribution of responses when all observations are from people who volunteer to participate?
-- What kind of a variable is being diplayed here?
-- What kind of a visualization is this?
-```{r ams, echo=F, out.width = "60%"}
-knitr::include_graphics("amazon_small.png")
-```
-
-
-### Statistics is Everywhere
-What is the sample size here?  
-What do we notice about this distribution?
-
-```{r yelp, echo=F, out.width = "60%"}
-knitr::include_graphics("yelp.png")
-```
-
-
-### Statistics is Everywhere
-```{r amm, echo=F, out.width = "60%"}
-knitr::include_graphics("amazon_medium.png")
-```
-
-###Statistics is Everywhere
-- More from the article:
-
->"That problem generalizes to most online reviews. Research shows many of today’s most popular online review platforms — including Yelp business reviews, and Amazon product reviews — have a distribution of opinion that is highly polarized, with many extreme positive and/or negative reviews, and few moderate opinions. This creates a “bi-modal” or “J-shaped” distribution of online product reviews that has been well-documented in the academic literature. This makes it hard to learn about true quality from online reviews.""
 
 ### Important Note
 
@@ -424,9 +365,3 @@ and from New England Journal of Medicine 2019; 380:415-424
 - More about trials 
 - Sources of Bias
 
-### Parting humor
-From PhDcomics.com
-
-```{r sun, echo=F, out.width = "80%", fig.align='center'}
-knitr::include_graphics("research-cycle.png")
-```
