@@ -1,0 +1,511 @@
+---
+title: "Assignment 3: Predicting insurance charges by age and BMI"
+author: "Your name and student ID"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output: pdf_document
+---
+
+
+**Run this chunk of code to load the autograder package!**
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(testthat)
+```
+
+### Instructions 
+* Solutions will be released Tuesday, February 8th.
+* This semester, homework assignments are for practice only and will not be turned in for marks.
+
+Helpful hints:
+
+- Every function you need to use was taught during lecture! So you may need to revisit the lecture code to help you along by opening the relevant files on Datahub. Alternatively, you may wish to view the code in the condensed PDFs posted on the course website. Good luck!
+
+- Knit your file early and often to minimize knitting errors! If you copy and paste code for the slides, you are bound to get an error that is hard to diagnose. Typing out the code is the way to smooth knitting! We recommend knitting your file each time after you write a few sentences/add a new code chunk, so you can detect the source of knitting errors more easily. This will save you and the GSIs from frustration! **You must knit correctly before submitting.**
+
+- It is good practice to not allow your code to run off the page. To avoid this, have a look at your knitted PDF and ensure all the code fits in the file. If it doesn't look right, go back to your .Rmd file and add spaces (new lines) using the return or enter key so that the code runs onto the next line.
+
+\newpage
+
+--------------------------------------------------------------------------------
+
+```{r load-libraries, message=F}
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(broom)
+library(forcats)
+```
+
+### Predicting insurance charges by age and BMI 
+
+**Problem**: Medical insurance charges can vary according to the complexity of a 
+procedure or condition that requires medical treatment. You are tasked with 
+determining how these charges are associated with age, for patients who have a 
+body mass index (bmi) in the "normal" range (bmi between 16 and 25) who are 
+smokers.
+
+**Plan**: You have chosen to use tools to examine relationships between two 
+variables to address the problem. In particular, scatter plots and simple linear
+regression.
+
+**Data**: You have access to the dataset `insurance.csv`, a claims dataset from
+an insurance provider.
+
+**Analysis and Conclusion**: In this assignment you will perform the analysis 
+and make a conclusion to help answer the problem statement.
+
+\newpage
+
+**1. [1 point] Type one line of code to import these data into R. Assign the data to `insure_data`. Execute the code by hitting the green arrow and ensure the dataset has been saved by looking at the environment tab and viewing the data set by clicking the table icon to the right of its name.**
+
+```{r}
+insure_data <- NULL 
+insure_data 
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p1.R")
+```
+
+\newpage
+
+**Execute the functions below one line at a time to get to know your dataset.**
+
+```{r initial-looks}
+dim(insure_data)
+names(insure_data)
+str(insure_data)
+head(insure_data)
+```
+
+\newpage
+
+**2. [1 point] How many individuals are in the dataset? Assign this number to p2.**
+
+```{r}
+p2 <- NULL
+p2
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p2.R")
+```
+
+**3. [1 point] What are the nominal variables in the dataset? Assign the names of these variables to a vector of strings, `p3`.**
+
+```{r}
+p3 <- NULL
+p3
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p3.R")
+```
+
+**4. [1 point] How many ordinal variables are in the dataset? Assign the *number* of ordinal variables to `p4`.**
+
+```{r}
+p4 <- NULL
+p4
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p4.R")
+```
+
+**5. [1 point] Are there continuous variables in the dataset? Assign the names of these variables to a vector of strings, `p5`.**
+
+```{r p5}
+p5 <- NULL
+p5
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p5.R")
+```
+
+**6. [1 point] What are the discrete variables in the dataset? Assign the names of these variables to a vector of strings, `p6`.**
+
+```{r p6}
+p6 <- NULL 
+p6
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p6.R")
+```
+
+\newpage
+
+**Run the following code. Remind yourself what the `mutate()` function does in general, and notice that a new function called `case_when()` is also being used.**
+
+```{r mutate-case-when}
+insure_data <- insure_data %>%
+  mutate(bmi_cat = case_when(bmi < 16 ~ "Underweight",
+                             bmi >= 16 & bmi < 25 ~ "Normal",
+                             bmi >= 25 & bmi < 30 ~ "Overweight",
+                             bmi >= 30 ~ "Obese")
+                  )
+```
+
+**7. What did the code above accomplish?**
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+**8. [1 point] What type of variable is `bmi_cat`? Uncomment one of the choices below.**
+
+```{r p8}
+# p8 <- 'ordinal'
+# p8 <- 'nominal'
+# p8 <- 'continuous'
+# p8 <- 'discrete'
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p8.R")
+```
+
+\newpage
+
+**9. [1 point] Read the problem statement proposed at the beginning of this exercise. Who belongs to the population of interest? Uncomment one of the choices below.** 
+
+```{r p9}
+# p9 <- 'Smokers of normal BMI'
+# p9 <- 'Smokers of overweight BMI'
+# p9 <- 'Smokers who have abnormal BMI'
+# p9 <- 'All people at risk of high medical charges'
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p9.R")
+```
+
+**10. [1 point] Using a `dplyr` function, make a new dataset called `insure_subset` containing the population of interest.**
+
+```{r p10}
+insure_subset <- NULL 
+insure_subset
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p10.R")
+```
+
+\newpage
+
+**11. [3 points] Make a scatter plot of the relationship between `age` and insurance `charges` for the population of interest. Give your plot an informative title.**
+
+```{r scatter-plot}
+p11 <- NULL
+p11
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p11.R")
+```
+
+\newpage
+
+**12. [2 points] Run a linear regression model on the relationship between `age` and `charges`. Think about which variable is explanatory (X) and which is response (Y). Assign the regression model to the object `insure_mod` and uncomment the line of code below the model to tidy the output.**
+
+```{r regression-mod}
+insure_model <- NULL
+insure_model 
+# tidy(insure_model)
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p12.R")
+```
+
+**13. [1 point] Interpret the slope parameter in the context of this problem.**
+
+_Type your answer here, replacing this text._
+
+**14. [1 point] Interpret the intercept parameter.**
+
+_Type your answer here, replacing this text._
+
+**15. [1 point] Does the intercept make sense in this context?**
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+**16. [1 point] Add the line of best fit to your scatterplot by copying and pasting the plot's code from question 11 in the chunk below and adding a `geom` that can be used to add a regression line.**
+
+```{r scatter-plot-with-line}
+p16 <- NULL 
+p16
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p16.R")
+```
+
+\newpage
+
+**17. [2 points] What do you notice about the fit of the line in terms of the proportion of points above vs. below the line? Why do you think that is?**
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+**Run the following `filter()` function in the chunk below.**
+
+```{r filter-smalller}
+insure_smaller_subset <- insure_subset %>% 
+  filter(charges < 30000 & ! (charges > 25000 & age == 20))
+```
+
+**18. [2 points] How many individuals were removed? Who were they?**
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+**19. [2 points] Run a regression model on `insure_smaller_subset` between `charges` and `age`. Assign the model to `insure_better_model` and analyze the output using the `tidy()` function.**
+
+```{r second-regression-mod}
+insure_better_model <- NULL
+# tidy(insure_better_model)
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p19.R")
+```
+
+\newpage
+
+**20. [2 points] Add the new regression line to your ggplot from question 16. Keep the original regression line on the plot for comparison. To distinguish the lines, change the color, line type, or line width of one of the lines.**
+
+```{r scatter-two-lines}
+p20 <- NULL # YOUR CODE HERE
+p20
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p20.R")
+```
+
+\newpage
+
+**21. [1 point] Calculate the r-squared value for `insure_model` and assign this value to `insure_model_r2`.**
+
+```{r rsquared}
+insure_model_r2 <- NULL
+insure_model_r2
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p21.R")
+```
+
+**22. [1 point] Calculate the r-squared value for `insure_better_model` using a function learned in class. Assign this value to `insure_better_model_r2`.**
+
+```{r rsquared2}
+insure_better_model_r2 <- NULL 
+insure_better_model_r2
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p22.R")
+```
+
+\newpage
+
+**23. [2 points] Calculate the correlation coefficient between `age` and `charges` using `insure_subset`. Also calculate the squared correlation coefficient. You should use `summarize()` to create a dataframe of these two values and name the two variables `corr` and `corr_sq`, respectively. What do you notice about the relationship between the correlation coefficient and r-squared values that you calculated earlier?**
+
+```{r correlations}
+p23 <- NULL
+p23
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p23.R")
+```
+
+**24. [2 points] Calculate the correlation coefficient between `age` and `charges` using the smaller dataset `insure_smaller_subset`. Also calculate the squared correlation coefficient. You should use `summarize()` to create a dataframe of these two values and name the two variables `corr` and `corr_sq`, respectively. What do you notice about the relationship between the correlation coefficient and r-squared values that you calculated earlier?**
+
+```{r correlations2}
+p24 <- NULL
+p24
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p24.R")
+```
+
+\newpage
+
+**Your supervisor asks you to extend your analysis to consider other smokers with BMIs classified as overweight or obese. In particular, she wanted to know if the relationship between age and medical charges is different for different BMI groups. You can use data visualization coupled with your skills in linear regression to help answer this question.**
+
+**25. [1 point] Make a new dataframe called `insure_smokers` that includes smokers of any BMI from the original `insure_data` dataset.**
+
+```{r}
+insure_smokers <- NULL
+insure_smokers
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p25.R")
+```
+
+\newpage
+
+**26. [1 point] Make a scatterplot that examines the relationship between `age` and `charges` for normal, overweight, and obese individuals in three side by side plots. A `facet_` command may help you.**
+
+```{r ggplot-by-bmi}
+p26 <- NULL 
+p26
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p26.R")
+```
+
+**The plot above automatically displays the BMI categories alphabetically. Run the chunk below to assign a different order to the values of `bmi_cat`.**
+
+```{r fct-relevel}
+insure_smokers <- insure_smokers %>%
+  mutate(bmi_cat_ordered = forcats::fct_relevel(bmi_cat, "Normal", "Overweight", "Obese"))
+```
+
+\newpage
+
+**27. [1 point] Re-run your code from question 26, but facet using `bmi_cat_ordered`.**
+
+```{r ggplot-by-bmi-2}
+p27 <- NULL
+p27
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p27.R")
+```
+
+\newpage
+
+**28. [3 points] Run a separate linear model for each BMI group. To do this, you will need to subset your data into the three groups of interest. Call your models `normal_mod`, `overweight_mod`, `obese_mod`. Use the `tidy()` function to display the output from each model.**
+
+```{r more-models-more-outputs}
+
+## subset your data here
+
+# '<<<<YOUR CODE HERE>>>>'
+# '<<<<YOUR CODE HERE>>>>'
+# '<<<<YOUR CODE HERE>>>>'
+
+## generate your models
+
+normal_mod <- '<<<<YOUR CODE HERE>>>>'
+overweight_mod <- '<<<<YOUR CODE HERE>>>>'
+obese_mod <- '<<<<YOUR CODE HERE>>>>'
+
+## tidy your models
+
+# '<<<<YOUR CODE HERE>>>>'
+# '<<<<YOUR CODE HERE>>>>'
+# '<<<<YOUR CODE HERE>>>>'
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p28.R")
+```
+
+\newpage
+
+**For the next three problems, use the models to predict medical charges for a 20-year old by weight category. You don't need an R function to make these predictions, just the output from the models. Show your work for each calculation.**
+
+**29. [1 point] Predict the medical charges for a 20 year old with a normal BMI.**
+
+```{r p29}
+p29 <- NULL
+p29 
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p29.R")
+```
+
+**30. [1 point] Predict the medical charges for a 20 year old with an overweight BMI.**
+
+```{r p30}
+p30 <- NULL
+p30
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p30.R")
+```
+
+**31. [1 point] Predict the medical charges for a 20 year old with an obese BMI.**
+
+```{r p31}
+p31 <- NULL
+p31 
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p31.R")
+```
+\newpage
+
+**32. [3 points] In three sentences maximum, comment on (1) the direction of the association, (2) how much the slopes vary across the BMI groups, and (3) how much the predicted medical charges for a 20-year old varies by BMI category.**
+
+_Type your answer here, replacing this text._
+
+## END
+
