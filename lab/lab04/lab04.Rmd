@@ -1,0 +1,228 @@
+---
+title: 'Lab 4: Screening and Precision Public Health'
+author: "Your name and student ID"
+date: "today's date"
+output: pdf_document
+---
+
+
+**Run this chunk of code to load the autograder package!**
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(testthat)
+```
+
+### Instructions 
+* Due date: Monday, February 21nd at 11:59pm.
+* Late penalty: 50% late penalty if submitted within 24 hours of due date, no marks for assignments submitted thereafter.
+* This assignment is graded on **correct completion**, all or nothing. You must pass all public tests and submit the assignment for credit.
+* Submission process: Follow the submission instructions on the final page. Make sure you do not remove any `\newpage` tags or rename this file, as this will break the submission.
+
+# Screening
+We will talk about a very important use of conditional probability in public health and medicine, which is the idea of tools that screen for health outcomes. There are many examples of this, including mammograms for detection of breast cancer, the prostate specific antigen (PSA) for detection of prostate cancer, as well as tests for exposure to infectious diseases, and so forth. We will consider two types of events: i) whether the subject truly has the health condition of interest (let $D$ denote the disease of interest, and $D'$ its complement), and ii) whether a test was positive or not for this outcome (let $+$ denote a positive test and $-$ denote its complement, a negative test). There are several statistics that are used to evaluate the performance of a test, some of which are derivable from each other:
+
+- Sensitivity: $P(+ \mid D)$ or the probability of test being positive if one has the disease.
+- Specificity: $P(- \mid D')$ or the probability of test being negative given one does not have the disease. 
+- Positive predictive value (PPV): $P(D \mid +)$ or the probability of having the disease if an individual tests positive.
+- Negative predictive value (NPV):  $P(D' \mid -)$ or the probability of not having the disease if an individual tests negative.
+
+Consider the following situation: Assume the total number of subjects is 10,000 and that $P(D) = 0.05$, $P(+ \mid D) = 0.95$, $P(- \mid D') = 0.95$. This set up implies that the disease is rare, but a very accurate test exists for the disease (i.e., equally high sensitivity and specificity).
+
+**1. [1 point] Fill in the following two-way table with the absolute frequencies provided in the problem. (You can fill it in simply by typing the frequencies in the nine empty cells.):**
+
+|       | $D$ | $D'$ |  Total|
+|-------|-----|------|-------|
+|+      |     |      |       |
+|-      |     |      |       |
+| Total |     |      |       |
+
+Create a vector called `p1` with the entries of this table, entering one column at a time.  For example, if my table was as follows:
+
+|       | $D$ | $D'$ |  Total|
+|-------|-----|------|-------|
+|+      |  1  |  2   |  3    |
+|-      |  4  |  5   |  6    |
+| Total |  7  |  8   |  9    |
+
+Then I would enter my vector as:
+```{r}
+p1 <- c(1, 4, 7, 2, 5, 8, 3, 6, 9)
+```
+
+```{r}
+p1 <- NULL # YOUR CODE HERE
+p1
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p1.R")
+```
+
+\newpage
+
+**2. [1 point] Calculate the PPV (Positive Predictive Value) using the entries from your table. Store the PPV as a percentage assigned to `p2`.**
+
+```{r}
+p2 <- NULL # YOUR CODE HERE
+p2
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p2.R")
+```
+
+\newpage
+  
+**3. [1 point] Re-do the two-way table and re-calculate the PPV, this time assuming that $P(D)=0.02$. (Note that $P(+ \mid D) = 0.95$, $P(- \mid D') = 0.95$, as with the previous question). Similarly, create a vector, `p3`, with the entries of this table, entering one column at a time.**
+
+|       | $D$ | $D'$ |  Total|
+|-------|-----|------|-------|
+|+      |     |      |       |
+|-      |     |      |       |
+| Total |     |      |       |
+
+```{r}
+p3 <- NULL # YOUR CODE HERE
+p3
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p3.R")
+```
+ 
+\newpage 
+    
+**4. [1 point] Again, calculate the PPV (Positive predictive value) using the entries from your table. Store the PPV as a percentage rounded to 1 decimal place.**
+
+```{r}
+p4 <- NULL # YOUR CODE HERE
+p4
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p4.R")
+```
+
+\newpage
+
+**5. Explain why the first scenario has a high sensitivity and a low PPV, and why the second scenario has an even lower PPV.**
+
+_Type your answer here, replacing this text._
+
+\newpage
+  
+## Precision in public health
+
+One of the goals of public health research is to group people by risk factors or demographic variables so that decision-makers can predict, with actionable accuracy, which groups are at high and low risk of an adverse health outcome. In this set of questions, we consider stratified two-way tables, which are two-way tables specific to levels of a third grouping variable. Here, the adverse health outcome is coronary heart disease (CHD), which we represent by $D$. We study two categorical risk factors, smoking (defined by $S$ for smoking and $S'$ for no smoking) and age (defined by $A$ for older age and $A'$ for younger age). 
+
+First, read in the aggregated data set. The last column (n) is the number of individuals in each group. 
+                       
+```{r makepop, message=F,warning=F}
+library(dplyr)
+library(tidyverse)
+chd_dat <- read_csv("data/CHD.csv")
+chd_dat
+```
+                       
+**6. [1 point] Using the table above, calculate the following probabilities. Convert your answers to percentages and round to the nearest whole number. Store the values (without the "%" and in the specified order below) in the vector `p6`.**
+                       
+- $P(D \mid A', S)$
+- $P(D \mid A', S')$ 
+- $P(D \mid A, S)$ 
+- $P(D \mid A, S')$  
+
+```{r}
+p6 <- NULL # YOUR CODE HERE
+p6
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p6.R")
+```
+
+If you prefer, you can do these calculations by hand. Some students might wish to use R commands to calculate these probabilities. There are **many** ways to do this. You could use `dplyr` functions to perform the calculations. Alternatively, here are some new functions for those of you interested in learning more R. (Note that these new functions won't be tested, they are for your information only, and to expose you to more of the R language!). 
+
+You could consider using the `uncount()` function to expand the data based upon the numbers in each group (i.e., `n`) and assign the expanded data frame to a new name. Then, you can use the `tabyl` function from the `janitor` package to create stratified two-way tables, and the relevant `adorn_` functions from `janitor` to convert the frequencies to percentages.
+
+```{r}
+# Try using uncount() and tabyl() here!
+
+# YOUR CODE HERE
+```
+
+_Type your answer here, replacing this text._
+ 
+\newpage
+
+**7. What do these numbers imply about smoking and the risk of CHD?**
+ 
+_Type your answer here, replacing this text._
+
+\newpage
+
+**8. [1 point] Calculate the marginal probability of CHD. This can be written as $P(D)$. Store your answer in the object `p8` as a percent rounded to the nearest whole number.**
+
+```{r}
+p8 <- NULL # YOUR CODE HERE
+p8
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p8.R")
+```
+
+\newpage
+
+**9. [1 point] Calculate the conditional probabilities ($P(D | A')$ and $P(D | A)$). Store these in the vector `p9` as percentages rounded to the nearest whole number.**
+
+```{r}
+p9 <- NULL # YOUR CODE HERE
+p9
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p9.R")
+```
+
+\newpage
+
+**10. If you had an intervention that could eliminate smoking on the risk of CHD, which age group (old or young) would see the biggest change in CHD incidence?**
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+### Submission
+
+For assignments in this class, you'll be submitting using the **Terminal** tab in the pane below. In order for the submission to work properly, make sure that:
+
+1. Any image files you add that are needed to knit the file are in the `src` folder and file paths are specified accordingly.
+2. You **have not changed the file name** of the assignment.
+3. The file knits properly.
+
+Once you have checked these items, you can proceed to submit your assignment.
+
+1. Click on the **Terminal** tab in the pane below.
+2. Copy-paste the following line of code into the terminal and press enter.
+
+cd; cd phw142-sp22/lab/lab04; python3 turn_in.py
+
+3. Follow the prompts to enter your Gradescope username and password.
+4. If the submission is successful, you should see "Submission successful!" appear as the output. **Check your submission on the Gradescope website to ensure that the autograder worked properly and you received credit for your correct answers. If you think the autograder is incorrectly grading your work, please post on piazza!**
+5. If the submission fails, try to diagnose the issue using the error messages--if you have problems, post on Piazza under the post "Datahub Issues".
+
+The late policy will be strictly enforced, **no matter the reason**, including submission issues, so be sure to submit early enough to have time to diagnose issues if problems arise.

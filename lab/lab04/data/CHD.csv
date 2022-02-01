@@ -1,0 +1,9 @@
+﻿Age,Smoking,CHD,n
+young,yes,yes,60
+young,yes,no,240
+young,no,yes,105
+young,no,no,595
+old,yes,yes,180
+old,yes,no,120
+old,no,yes,210
+old,no,no,490
