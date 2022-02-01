@@ -1,25 +1,6 @@
 ---
 title: "L07:  Relationships between two categorical variables"
-output:
-  beamer_presentation:
-    slide_level: 3
-  ioslides_presentation: default
-  slidy_presentation: default
-header-includes:
-- \usetheme{Goettingen}
-- \renewcommand{\textbf}{\structure}
-- \renewcommand{\mathbf}{\structure}
-- \addtobeamertemplate{navigation symbols}{}{ \usebeamerfont{footline} }
-- \addtobeamertemplate{navigation symbols}{}{ \usebeamercolor[fg]{footline} }
-- \addtobeamertemplate{navigation symbols}{}{ \insertframenumber/\inserttotalframenumber
-  }
-- \usepackage[os=win]{menukeys}
-- \usepackage{soul}
-- \usepackage{xcolor}
-- \usepackage{caption}
-- \usepackage[os=win]{menukeys}
-- \usepackage{copyrightbox}
-classoption: aspectratio=169
+
 ---
 
 <!-- libraries -->
@@ -28,22 +9,6 @@ library(knitr) # for include_graphics()
 library(dplyr)
 ```
 
-<!-- define function for external images -->
-```{r,include=FALSE,purl=FALSE}
-image<-function(ff,ss,cc=NULL,ll=NULL){
-  if(is.null(cc)){
-    paste('\\centering','\n',
-          '\\includegraphics[scale=',ss,']{',ff,'}',
-          sep='')
-  } else {
-    paste('\\centering','\n',
-          '\\copyrightbox[b]{',
-          '\\includegraphics[scale=',ss,']{',ff,'}',
-          '}{\\raggedleft{\\tiny \\href{',ll,'}{',cc,'}}}',
-          sep='')    
-  }
-}
-```
 
 <!-- define function for links -->
 ```{r,include=FALSE,purl=FALSE}
@@ -439,8 +404,3 @@ Watch: https://www.youtube.com/watch?v=E_ME4P9fQbo
 4. Simpson's Paradox
 
 
-### Comic Relief
-
-```{r, out.width="80%", echo=F}
-knitr::include_graphics("show-work.jpg")
-```
