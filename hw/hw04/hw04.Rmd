@@ -1,0 +1,300 @@
+---
+title: "Problem Set 4: Random Variables, Probability, and Screening Properties"
+author: "Your name and student ID"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output: pdf_document
+---
+
+**Run this chunk of code to load the autograder package!**
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(testthat)
+```
+
+### Instructions 
+* Solutions will be released on Tuesday, February 22nd.
+* This semester, problem sets are for practice only and will not be turned in for marks.
+
+Helpful hints:
+
+- Every function you need to use was taught during lecture! So you may need to revisit the lecture code to help you along by opening the relevant files on Datahub. Alternatively, you may wish to view the code in the condensed PDFs posted on the course website. Good luck!
+
+- Knit your file early and often to minimize knitting errors! If you copy and paste code for the slides, you are bound to get an error that is hard to diagnose. Typing out the code is the way to smooth knitting! We recommend knitting your file each time after you write a few sentences/add a new code chunk, so you can detect the source of knitting errors more easily. This will save you and the GSIs from frustration! 
+
+## Part 1: Simulating Birth Defect Data and Sampling from an Infinitely Large Population
+
+The Center for Disease Control and Prevention (CDC) estimates that 1 in every
+33 infants is born with a birth defect in the United States each year.
+
+**1. [3 points] Define a random variable for "birth defect". Write down the probability model for the random variable. Round each percentage to two decimal places (e.g., 0.43224 would be rounded to 43.22%). Is the sample space discrete or continuous?**
+
+
+You might want to use the table template below to write out your probability 
+model. *Knit now* to see how this table is rendered in your PDF.
+
+| Tables   |      Are     |  Cool |
+|----------|--------------|-------|
+| yadi     | type stuff   | X     |
+| yadi     | more stuff   | Y     |
+| yada     | etc          | Z     |
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+**2. [2 points] Simulate data that equals 0 if there is no birth defect and equals 1 if there is a birth defect. Simulate this data for 200 births at a local hospital. Be sure to use the risk of birth defect from part a). Assign your simulated output the name `sim_01`. Print your simulated births to the screen.**
+
+Before you run your simulation, we will "set the seed" to 100. This means that everyone's simulation will yield the exact same dataset.
+
+```{r set-seed}
+# execute this line before you write your simulation code.
+# only execute the set.seed() function one time. 
+set.seed(100) 
+```
+
+```{r simulate-200-births}
+sim_01 <- NULL # YOUR CODE HERE
+sim_01
+```
+
+```{r}
+. = ottr::check("tests/p2.R")
+```
+
+Notice that `sim_01` is not a dataframe - it is a vector of numbers. The 
+following code stores `sim_01` as a dataframe and changes its variable name. 
+Run this code and view `sim_01` in the Viewer pane.
+
+```{r, message=F, warning=F}
+library(dplyr)
+sim_01 <- as.data.frame(sim_01) # watch what happens to sim_01 in your environment
+names(sim_01) # prints the variable names in the sim_01 data frame
+sim_01 <- sim_01 %>% rename(birth_defect = sim_01)
+```
+
+\newpage
+
+**3. [2 points] Write code to determine the number of birth defects that occurred in your simulation, and the corresponding proportion with birth defects. Assign your output to the object `output_01`. Print `output_01` to the screen. Hint: Use `dplyr` functions to do this.**
+
+```{r, problem-3}
+output_01 <- NULL # YOUR CODE HERE
+output_01
+
+```
+
+```{r}
+. = ottr::check("tests/p3.R")
+```
+
+\newpage
+
+**4. [2 points] Re-run your simulation four more times and assign the output to a unique name each time. Print the number and proportion to the screen after each run. (Basically, "recycle" the code above four times).**
+
+```{r, problem-4}
+sim_02 <- 'YOUR ANSWER HERE'
+output_02 <- 'YOUR ANSWER HERE'
+output_02
+sim_03 <- 'YOUR ANSWER HERE'
+output_03 <- 'YOUR ANSWER HERE'
+output_03
+sim_04 <- 'YOUR ANSWER HERE'
+output_04 <- 'YOUR ANSWER HERE'
+output_04
+sim_05 <- 'YOUR ANSWER HERE'
+output_05 <- 'YOUR ANSWER HERE'
+output_05
+
+```
+
+```{r}
+. = ottr::check("tests/p4.R")
+```
+
+\newpage
+
+**5. [1 point] Assign the vector `p5` to the simulated proportions from each of your five (total) simulations in *increasing* order.**
+
+```{r, problem-5}
+p5 <- c('YOUR ANSWER HERE')
+p5
+
+```
+
+```{r}
+. = ottr::check("tests/p5.R")
+```
+
+\newpage
+
+**6. [1 point] Did you get close to the true value? Explain why there is variation in the proportions across the simulations.**
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+**7. [1 point] Suppose that rather than simulating 5 samples of size 200, we simulated 5 samples of size 1000. In 1-2 sentences, how would you expect the group of proportion estimates from the question above to be different? Comment both on the accuracy of these values at predicting the true value and their variance. If you're not sure, you can re-run your simulation with a larger sample size and see how the results change to deduct the difference.**
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+## Part 2: Probability of HIV and Hepatitis C
+
+Approximately 1.1 million Americans have HIV and 3.5 million Americans have Hepatitis C (HCV). The number of individuals with coinfection (e.g. both HIV and HCV) is 300,000. Among individuals with HIV, approximately 25% have Hepatitis C. The total US population was approximately 321 million at the time of these statistics.
+
+References for these stats:
+
+* https://www.cdc.gov/hiv/basics/statistics.html
+* https://www.cdc.gov/media/releases/2016/p0504-hepc-mortality.html
+* https://www.cdc.gov/hepatitis/populations/hiv.htm
+
+\newpage
+
+**8. [2 points] Calculate the probability that a randomly chosen American will have HIV. Then calculate the probability that a randomly chosen American will have HCV. Convert to percentages and round to two decimal places. Save the HIV and HCV probabilities (without the %) to the vector called `p8`.**
+
+```{r p8}
+p8 <- c('YOUR ANSWER HERE')
+p8
+
+```
+
+```{r}
+. = ottr::check("tests/p8.R")
+```
+
+\newpage
+
+**9. [2 points] Without using the total number of individuals with co-infections (300,000), calculate the probability that someone will have both HIV and HCV. Convert your answer to a percentage rounded to two decimal places and save it to the object called `p9`.**
+
+```{r p9}
+p9 <- NULL # YOUR CODE HERE
+p9
+
+```
+
+```{r}
+. = ottr::check("tests/p9.R")
+```
+
+\newpage
+
+**10. [2 points] Are HIV and HCV infections independent? Uncomment your selection.**
+
+```{r p10}
+# p10 <- 'independent'
+# p10 <- 'not independent'
+
+```
+
+```{r}
+. = ottr::check("tests/p10.R")
+```
+_Type your answer here, replacing this text._
+
+\newpage
+
+**11. [2 points] In general, does P(A|B) equal P(B|A)? Calculate P(HIV | HCV) and report whether or not it is equal to P(HCV | HIV).**
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+## Part 3: Screening for Lung Cancer
+
+Background reading: Read pages 258-261 (and optionally 261-264) of Baldi & Moore, Edition 4. (For earlier editions, look for the section on diagnostic testing in medicine or on screening which covers sensitivity, specificity, negative predictive value, and positive predictive value). 
+
+Lung cancer is a leading cause of cancer-related deaths in the United States. Researchers examined the idea of testing all Medicare-enrolled heavy smokers for lung cancer with a computed tomography (CT) scan every year. In this population, the lifetime chance of developing lung cancer is high. In any given year, approximately 3% of heavy smokers develop lung cancer. The CT scan positively identifies lung cancer 89% of the time, and it gives negative results for 93% of individuals who do not have lung cancer.
+
+\newpage
+
+**12. [3 points] Use probability notation to express the three probabilities cited. Make sure to define each event using a capital letter (or two capital letters). What do the 89% and 93% values represent?**
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+**13. [3 points] What percent of CT scans in this target population would be positive? Answer this question by making either a probability tree or using absolute frequencies. Show your work.**
+
+_Type your answer here, replacing this text._
+
+*Note: If you are writing your solutions in R markdown you may want to upload an image of a hand-drawn tree diagram (this is optional). If so, use the following code. Be sure to remove the option "eval = F" if using this code or it won't run when you knit the file!*
+
+```{r, echo=F, out.width="80%", eval=F}
+library(knitr)
+# include_graphics("src/your-scans-name.jpg")
+# Once you replace the above line with your file's name (after uploading the file to datahub's Image sub-directory) you can execute the line of code and 
+# verify that the tree diagram is printed below the code chunk.
+
+```
+
+\newpage
+
+**14. [1 point] Write the probability statement that represents a Medicare-enrolled heavy smoker who gets a positive scan and actually has lung cancer.**
+
+_Type your answer here, replacing this text._
+
+**15. [1 point] Calculate the probability from question 14 using your work from question 13. Store the answer as a percentage rounded to one decimal place in the object called `p15`.**
+
+```{r p15}
+p15 <- NULL # YOUR CODE HERE
+p15
+
+```
+
+```{r}
+. = ottr::check("tests/p15.R")
+```
+_Type your answer here, replacing this text._
+
+
+**16. [1 point] What is the definition of the value you calculated in the previous question? Uncomment your selection.**
+
+```{r p16}
+# p16 <- 'Positive Predictive Value'
+# p16 <- 'Negative Predictive Value'
+# p16 <- 'Sensitivity'
+# p16 <- 'Specificity'
+
+```
+
+```{r}
+. = ottr::check("tests/p16.R")
+```
+
+## Part 4: Prenatal Microdeletion Screening
+
+The following questions are based on a [New York Times article](https://www.nytimes.com/2022/01/01/upshot/pregnancy-birth-genetic-testing.html) published on January 1, 2022.
+
+In 2020, a biotech company called Natera conducted 400,000 prenatal screening tests for DiGeorge Syndrome, which is a disorder associated with heart defects and intellectual disability. The company claimed that they could correctly identify 200 true cases of the disorder while identifying an equal number of false positives. However, the data showed that they incorrectly identified 606 tests as positive cases. Assume the screening test has a 93% sensitivity.
+
+**17. Fill out the table based on the information above. Round your answers to the nearest whole number.**
+
+
+|            |   True +     |  True - | Total   |
+|------------|--------------|---------|---------|
+| test +     |              |         |         |
+| test -     |              |         |         |
+| Total      |              |         |         |
+
+
+_Type your answer here, replacing this text._
+
+**18. [1 point] Calculate the positive predictive value for this screening test.**
+
+```{r p18}
+p18 <- NULL # YOUR CODE HERE
+p18
+
+```
+
+```{r}
+. = ottr::check("tests/p18.R")
+```
+
+**19. Why does the test have a high sensitivity but a low PPV?**
+
+_Type your answer here, replacing this text._
+
+
+## END
+
