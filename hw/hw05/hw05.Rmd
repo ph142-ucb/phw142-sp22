@@ -1,0 +1,217 @@
+---
+title: "Homework 5: Normal and Binomial Distributions"
+author: "Your name and student ID"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output: pdf_document
+---
+
+
+**Run this chunk of code to load the autograder package!**
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(testthat)
+```
+
+### Instructions 
+* Solutions will be released on Tuesday, March 1st.
+* This semester, homework assignments are for practice only and will not be turned in for marks.
+
+Helpful hints:
+
+- Every function you need to use was taught during lecture! So you may need to revisit the lecture code to help you along by opening the relevant files on Datahub. Alternatively, you may wish to view the code in the condensed PDFs posted on the course website. Good luck!
+
+- Knit your file early and often to minimize knitting errors! If you copy and paste code for the slides, you are bound to get an error that is hard to  diagnose. Typing out the code is the way to smooth knitting! We recommend knitting your file each time after you write a few sentences/add a new code chunk, so you can detect the source of knitting errors more easily. This will save you and the GSIs from frustration! **You must knit correctly before submitting.**
+
+- To avoid code running off the page, have a look at your knitted PDF and ensure all the code fits in the file. If it doesn't look right, go back to your .Rmd file and add spaces (new lines) using the return or enter key so that the code runs onto the next line.
+
+\newpage
+
+--------------------------------------------------------------------------------
+
+## Part 1: Pregnancy Length Probabilities
+
+An average pregnancy for humans lasts 266 days, with a standard deviation of 
+16 days. Assume that human pregnancies are Normally distributed. 
+
+**1. [1 point] Approximately what proportion of births are expected to occur on or before 298 days? To aid your answer, hand-draw (or use any software to sketch) a Normal curve and add dashed lines at the mean +/- 1SD, 2SD and 3SD. Calculate the proportion of births occurring on or before 298 days by shading this region under the curve. You shouldn't need to use R to perform any calculations for this question. Round the proportion to one decimal place.**
+
+(Use the code chunk below to include an image file of your drawing. To do this you need to delete the hashtag, upload the image to Datahub into the `src` directory and replace the file name with your file name. JPG or PNG will both work).
+
+```{r, out.width="50%"}
+#knitr::include_graphics("src/Your-file-name.JPG")
+
+```
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+**2. [1 point] Check your answer from part a) using R code. Create a vector called `p2` that stores 2 values: your answer from part a and the absolute difference between your answer from a and the exact probability that you calculated with code.**
+
+```{r}
+p2 <- NULL # YOUR CODE HERE
+p2
+
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p2.R")
+```
+
+\newpage
+
+**3. [1 point] What is the range, in days, that the middle 50% of pregnancies last? To aid your answer, hand-draw (or use any software to sketch) a Normal curve and shade in the area that the middle range represents. Then use R to calculate this middle range. Round the lower and upper bound of the range each to two decimal places.**
+
+(Use the code chunk below to include an image file of your drawing. To do so you need to delete the hashtag, upload the image to Datahub into the `src` directory and replace the file name with your file name. JPG or PNG will both work).
+
+```{r}
+#knitr::include_graphics("src/Your-file-name.JPG")
+```
+
+```{r, out.width="50%"}
+# YOUR CODE HERE
+
+# YOUR CODE HERE
+```
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+## Part 2: Assessing Normality and Interpreting QQ Plots 
+
+The number of trees for nine plots of land, each of 0.1 hectare, have been recorded. They are: 18, 4, 22, 15, 18, 19, 22, 12, 12. Are these data Normally distributed?
+
+\newpage
+
+**4. [1 point] Make a Normal quantile plot for these data using R. Remember, to make a ggplot of these data, you need to first input the data as a vector and then convert that vector to a dataframe. Example code has been provided to help get you started. After making the plot, assess whether the data appear to approximately follow a Normal distribution.**
+
+```{r ggplot_qqplot,message=FALSE}
+library(tidyverse)
+
+# example code
+counts <- c(1, 2, 3)
+tree_data <- data.frame(counts)
+
+# YOUR CODE HERE
+
+
+# YOUR CODE HERE
+```
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+
+## Part 3: Conducting a study about general anxiety disorder
+
+Suppose that a new treatment for general anxiety disorder has undergone safety and efficacy trials and, based on these data, 30% of patients with general anxiety disorder are expected to benefit from the new treatment. You are conducting a follow-up study and have enrolled 8 participants with general anxiety disorder so far. These patients do not know each other and represent individuals who responded to a call for study participants that 
+they saw on a flier on campus.
+
+\newpage
+
+**5. [1 point] Let $X$ represent the number of enrolled patients who benefit from the treatment. Does $X$ meet the assumptions of a Binomial distribution? Thoroughly explain why or why not.**
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+**6. [1 point] Using one of the distributions whose assumptions $X$ meets, calculate the probability that exactly 5 participants will benefit from the treatment (by hand). Show your work.**
+
+```{r}
+p6 <- NULL # YOUR CODE HERE
+p6
+
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p6.R")
+```
+
+\newpage
+
+**7. [1 point] Confirm your previous calculation using an R function and store your answer to `p7`.**
+
+```{r}
+p7 <- NULL # YOUR CODE HERE
+p7
+
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p7.R")
+```
+
+\newpage
+
+**8. [1 point] Calculate the probability that 6 or more participants will benefit from the treatment (by hand). Show your work.**
+
+```{r}
+p8 <- NULL # YOUR CODE HERE
+p8
+
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p8.R")
+```
+
+\newpage
+
+**9. [1 point] Confirm your previous calculation using the function `pbinom()` and store your answer to `p9`.**
+
+```{r}
+p9 <- NULL # YOUR CODE HERE
+p9
+
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p9.R")
+```
+
+\newpage
+
+**10. [1 point] Re-confirm your previous calculation, this time using the function `dbinom()`, and store your answer to `p10`.**
+
+```{r}
+p10 <- NULL # YOUR CODE HERE
+p10
+
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p10.R")
+```
+
+\newpage
+
+**11. [1 point] Interpret the binomial coefficient, ${8 \choose 7}$, in the context of this study. Write out all the possible combinations to achieve ${8 \choose 7}$.**
+
+_Type your answer here, replacing this text._
+
+**12. [1 point] Calculate the number of patients you would expect to benefit from the treatment. Then calculate the standard deviation of this estimate. Write a sentence to interpret the mean. If the mean is not a whole number, what whole number is most probable?**
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+**13. [1 point] Should you apply a Normal approximation to these data using the $\mu$ and $\sigma$ you calculated in the last question? Why or why not?**
+
+_Type your answer here, replacing this text._
+
+## END 
+
