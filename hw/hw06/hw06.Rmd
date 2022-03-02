@@ -1,0 +1,145 @@
+---
+title: "Problem Set 6"
+author: "Your name and student ID"
+date: "Today's date"
+output:
+  pdf_document: default
+---
+
+
+**Run this chunk of code to load the autograder package!**
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(testthat)
+```
+
+```{r, warning=F, message=F, echo=F}
+library(dplyr)
+library(ggplot2)
+```
+
+### Instructions 
+* Solutions will be released on Tuesday, March 9th
+* This semester, homework assignments are for practice only and will not be turned in for marks.
+
+Helpful hints:
+
+- Every function you need to use was taught during lecture! So you may need to revisit the lecture code to help you along by opening the relevant files on Datahub. Alternatively, you may wish to view the code in the condensed PDFs posted on the course website. Good luck!
+
+- Knit your file early and often to minimize knitting errors! If you copy and paste code for the slides, you are bound to get an error that is hard to diagnose. Typing out the code is the way to smooth knitting! We recommend knitting your file each time after you write a few sentences/add a new code chunk, so you can detect the source of knitting errors more easily. This will save you and the GSIs from frustration! **You must knit correctly before submitting.*
+
+
+## Part I
+
+Oklahoma is not historically known for experiencing earthquakes. Up until 2008, Oklahoma experienced a constant rate of about 1.5 perceptible earthquakes per year on average.
+
+**1. Assuming that earthquakes are random and independent, with a constant rate of 1.5 per year, the count of perceptible earthquakes per year in Oklahoma should have a Poisson distribution with mean 1.5. What is the standard deviation of the number of earthquakes per year? Round your answer to 3 decimal places.**
+
+```{r calculate-sd}
+sd_earthquake <- NULL # YOUR CODE HERE
+sd_earthquake
+
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p1.R")
+```
+
+\newpage
+
+**2. Using the same assumptions from question 1, use one or two R functions to compute the probability of seeing less than two earthquakes per year. Round your answer to three decimal places.**
+
+```{r earthquake-prob}
+probability <- NULL # YOUR CODE HERE
+probability
+
+
+
+```
+
+```{r}
+. = ottr::check("tests/p2.R")
+```
+
+\newpage
+
+**3. Repeat same calculation as above, this time using only a hand calculator. Show your work and round your answer to two decimal places.**
+
+_Type your answer here, replacing this text._
+
+**4. In 2013, Oklahoma experienced 109 perceptible earthquakes (an average of two per week). Assuming the same model as above, write an equation to show how the chance of experiencing 109 earthquakes or more can be written as a function of the probability at or below some $k$.**
+
+(Note: You can write these equations using pen and paper. You can also write the equations using plain text (i.e., P(X >= k)). If you would like to use math equations that render when you knit the pdf, (i.e., $P(X>=k)$) you need to be **very careful** with your symbols. For example, to get the symbol for "greater than or equal to" you cannot copy and paste it into R from the slides or another document. This will cause errors! Instead, you need to write $P(X \geq k)$.
+
+_Type your answer here, replacing this text._
+
+
+**5. Use R to calculate the probability of observing 109 perceptible earthquakes or more. Round your answer to the nearest whole number.**
+
+```{r earthquake-109}
+probability_109_or_more <- NULL # YOUR CODE HERE
+probability_109_or_more
+
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p5.R")
+```
+
+\newpage
+
+**6. Based on your answer to question 5, write a sentence describing the chance of seeing such an event assuming the specified Poisson distribution (i.e., is it rare or common?)**
+
+_Type your answer here, replacing this text._
+
+
+**7. Based on your answer to question 5, would you conclude that the mean number of perceptible earthquakes has increased? Why or why not? Would knowing that the number of perceptible earthquakes was 585 in 2014 support your conclusion?**
+
+_Type your answer here, replacing this text._
+
+## Part II
+
+To track epidemics, the Center for Disease Control and Prevention requires physicians to report all cases of important transmissible diseases. In 2014, a total of 350,062 cases of gonorrhea were officially reported, 53% of which were individuals in their 20s. Assume this 53% stays the same every year. Researchers plan to take a simple random sample of 400 diagnosed cases of gonorrhea to study the risk factors associated with the disease. Call $\hat{p}$ the proportion of cases in the sample corresponding to individuals in their 20s. 
+
+**8. What is the mean of the sampling distribution of $\hat{p}$ in random samples of size 400?**
+
+```{r sampling-dist-mean}
+sampling_dist_mean <- NULL # YOUR CODE HERE
+sampling_dist_mean
+
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p8.R")
+```
+
+
+**9. What is the standard deviation of the sampling distribution of $\hat{p}$ in random samples of size 400? Round your answer to 3 decimal places.**
+
+```{r sampling-dist-sd}
+sampling_dist_sd <- NULL # YOUR CODE HERE
+sampling_dist_sd
+
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p9.R")
+```
+
+
+**10. Describe the conditions required for the sampling distribution of $\hat{p}$ to be Normally distributed. Use the numbers provided in the question to check if the conditions are met.**
+
+_Type your answer here, replacing this text._
+
+
+## END
+
+
