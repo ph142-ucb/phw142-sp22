@@ -1,0 +1,172 @@
+---
+title: "Lab07:  Central limit theorem and inference"
+author: "name and student ID"
+date: "Today's date"
+output: pdf_document
+---
+
+
+### Instructions 
+* Due date: Monday, March 21 at 11:59pm PST 
+* Late penalty: 50% late penalty if submitted within 24 hours of due date, no marks for assignments submitted thereafter.
+Remember: This homework does not involve autograder checking!
+
+The `\newpage` tags allow your submission to upload with the answers in the correct locations for grading.  
+* Submission process: Once finished, export your PDF and upload directly to Gradescope. 
+**Make sure to not remove or add any `\newpage` tags**
+
+Helpful hints:
+
+- Every function you need to use was taught during lecture! So you may need to 
+revisit the lecture code to help you along by opening the relevant files on Datahub. 
+Alternatively, you may wish to view the code in the condensed PDFs posted 
+on the course website. Good luck!
+
+- Knit your file early and often to minimize knitting errors! If you copy and 
+paste code for the slides, you are bound to get an error that is hard to 
+diagnose. Typing out the code is the way to smooth knitting! We recommend 
+knitting your file each time after you write a few sentences/add a new code 
+chunk, so you can detect the source of knitting errors more easily. This will 
+save you and the GSIs from frustration! You must knit correctly before submitting.*
+
+- If your code runs off the page of the knitted PDF then you will LOSE POINTS! To
+avoid this, have a look at your knitted PDF and ensure all the code fits in the 
+file (you can easily view it on Gradescope via the provided link after submitting). 
+If it doesn't look right, go back to your .Rmd file and add spaces (new lines) using 
+the return or enter key so that the code runs onto the next line.
+
+- Useful mathematical notation in markdown:
+
+$$\mu$$
+
+$$\sigma$$
+\newpage
+
+
+
+## Overview: 
+
+In today's lab you will use some online resources, read some texts and watch some videos about the central limit theorem and about differences between p values and confidence intervals. You will also review information about p-hacking and data dredging to bring you up-to-speed on some of the language used to talk about bad scientific practice around the misuse of p-values.
+
+### Section 1:  Central Limit Theorem
+
+Open this link https://seeing-theory.brown.edu/probability-distributions/index.html#section3 and click on "Central Limit Theorem".
+
+What you see is a simulation of a sampling process.  Set the $\alpha$ value to 5.00 and the $\beta$ value to 5.00  Notice the shape of the distribution (in yellow) at the top of the right hand side of the screen. 
+
+#### Question 1a
+What is the shape of this distribution? 
+
+
+_Type your answer here, replacing this text._
+
+
+\newpage
+
+Now set the sample size to 4 and the draws to 50 and click "sample":  you should see a simulation of 10 samples of 5 observations being drawn.  The distribution at the bottom now shows the distribution of means that were calculated in the random samples.  
+
+Now try again, setting the sample size to 10 and the draws to 50.
+
+
+#### Question 1b
+
+Now set the parameters as follows:  $\alpha=0.6$ $\beta=1$ sample size = 4 draws = 50.
+
+Then set the parameters to:  $\alpha=0.6$ $\beta=1$ sample size = 15 draws = 50. 
+
+How does the distribution of sample means change when the sample size increases?
+
+_Type your answer here, replacing this text._
+
+Play with the parameters a bit to change the shape of the original distribution and the sample size - notice when the histogram looks normally distributed and when it does not.
+
+\newpage
+
+### Section 2:
+
+To do: 
+
+- Watch this 11-min Youtube video on P-hacking: https://www.youtube.com/watch?v=Gx0fAjNHb1M
+
+- Read this Wikipedia article on data dredging: https://en.wikipedia.org/wiki/Data_dredging
+
+- Read this Vox article about the Cornell food researcher: https://www.vox.com/science-and-health/2018/9/19/17879102/brian-wansink-cornell-food-brand-lab-retractions-jama
+
+- Read this two-page ASA brief on statistical significance and p-values: https://www.amstat.org/asa/files/pdfs/P-ValueStatement.pdf
+
+In your own words: 
+
+#### Question 2a
+
+What is p-hacking?
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+#### Question 2b
+
+What is data dredging?
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+#### Question 2c
+
+One of these sources provides an example of p-hacking in epidemiology related to cancer clusters. Describe in your own words what the problem is.
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+#### Question 2d
+
+What are three practices noted in one of the articles to reduce p-hacking? Name each one and describe them in 1-2 sentences.
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+#### Question 2e
+
+One of the sources give a correction method for calculating p-value when you are going to conduct multiple tests. What is the name of the method? Write down the correction using an equation.
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+### Section 3:
+
+Please watch the video here:
+
+https://www.youtube.com/watch?reload=9&v=5OL1RqHrZQ8
+
+With captions: https://youtu.be/hes_5Xds8_U
+
+
+#### Question 3a
+
+Which p-value is mentioned as leading to “Elation”?
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+#### Question 3b
+
+How big was the “true” difference in the imaginary experiment described?
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+#### Question 3c
+
+Which measure gave a better estimate of the variability in results over multiple simulated studies?
+
+_Type your answer here, replacing this text._
+
+#### Remember: download your knitted PDF and upload directly to Gradescope - the final document should be 11 pages long.
+
+
