@@ -1,0 +1,231 @@
+---
+title: "Problem Set 8"
+author: "Your name and student ID"
+date: "Today's date"
+output:
+  pdf_document: default
+---
+
+
+**Run this chunk of code to load the autograder package!**
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(testthat)
+```
+
+```{r, warning=F, message=F, echo=F}
+library(dplyr)
+library(ggplot2)
+```
+
+### Instructions
+* Solutions will be released on Tuesday, April 5th, by 9:30am.
+* This semester, problem sets are for practice only and will not be turned in for marks.
+
+Helpful hints:
+
+- Every function you need to use was taught during lecture! So you may need to revisit the lecture code to help you along by opening the relevant files on Datahub. Alternatively, you may wish to view the code in the condensed PDFs posted on the course website. Good luck!
+
+- Knit your file early and often to minimize knitting errors! If you copy and paste code for the slides, you are bound to get an error that is hard to diagnose. Typing out the code is the way to smooth knitting! We recommend knitting your file each time after you write a few sentences/add a new code chunk, so you can detect the source of knitting errors more easily. This will save you and the GSIs from frustration!
+
+- To avoid code running off the page, have a look at your knitted PDF and ensure all the code fits in the file. If it doesn't look right, go back to your .Rmd file and add spaces (new lines) using the return or enter key so that the code runs onto the next line.
+
+\newpage
+
+## Section 1: Hemoglobin levels
+
+In a local hospital, there are two wards for elderly patients. Researchers took a simple random sample of hemoglobin levels (grams per liter) from patients in each ward:
+
+Ward A: 
+```{r}
+ward_a <- c(12.2, 11.1, 14.0, 11.3, 10.8, 12.5, 12.2, 11.9, 13.6, 12.7, 13.4, 13.7)
+```
+
+Ward B: 
+```{r}
+ward_b <- c(11.9, 10.7, 12.3, 13.9, 11.1, 11.2, 13.3, 11.4, 12.0, 11.1)
+```
+
+**1. In a single ggplot, create two box plots to compare the hemoglobin values for Ward A and Ward B (the two boxplots should be next to one another on one plot). Also plot the raw data as points, overlaid on top of the box plots.** 
+
+```{r make-data-frame}
+# This line of code creates a dataframe of hemoglobin levels from both wards
+hemoglobin <- data.frame(hemo_level = c(ward_a, ward_b), 
+                         ward = c(rep("Ward A", 12), rep("Ward B", 10)))
+```
+
+```{r}
+p1 <- NULL # YOUR CODE HERE
+p1
+
+
+```
+
+```{r}
+. = ottr::check("tests/p1.R")
+```
+
+\newpage
+
+**2. Comment on the similarities/differences portrayed by the plots, keeping in mind that the sample size is relatively small for these two wards.**
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+**3. What two assumptions do you need to make to use any of the t-procedures? Because each ward has a rather small sample size (n < 12 for both), what two characteristics of the data would you need to check for to ensure that the t-procedures can be applied?**
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+Next, you will perform a two-sided t-test for the difference between the two samples' mean hemoglobin levels, where the null hypothesis is that the underlying means are the same. Assume that the degrees of freedom is 19.515 (you don't need to calculate the degrees of freedom, you can use this value directly). 
+
+**4. Write the null and alternative hypotheses for this test.**
+
+_Type your answer here, replacing this text._
+
+**5. Calculate the mean difference between the two samples' mean hemoglobin levels and interpret this value.**
+
+```{r}
+mean_diff <- NULL # YOUR CODE HERE
+mean_diff
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p5.R")
+```
+_Type your answer here, replacing this text._
+
+**6. Calculate the 2-sided t-test statistic for the difference between the two samples' mean hemoglobin levels (by hand). Then use this test statistic and the degrees of freedom to calculate the p-value using a function in R. Round both the test statistic and p-value to 3 decimal places and assign them to a vector called `t_stat_p_val`. Confirm your test statistic and p-value are correct using R's built in `t.test` function. Does this p-value indicate that there is evidence to reject the null?**
+
+Hint: to perform the t-test using R's built in function, you need to pass the function an x and y argument, where x includes the values for Ward A and Y includes the values for Ward B. `dplyr`'s `filter()` and `pull()` functions will be your friends.
+
+```{r}
+t_stat_p_val <- NULL # YOUR CODE HERE
+t_stat_p_val
+
+```
+
+```{r}
+. = ottr::check("tests/p6.R")
+```
+_Type your answer here, replacing this text._
+
+**7. Calculate the 95% confidence interval (by hand) for the mean difference in hemoglobin levels between Ward A and Ward B that you calculated above. You can do this using `dplyr` to calculate the individual components of the 95% CI equation. Continue to assume the degrees of freedom is 19.515. Round your lower and upper bounds to 3 decimal places and assign these to a vector called `CI`.**
+
+```{r}
+CI <- NULL # YOUR CODE HERE
+CI
+
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p7.R")
+```
+
+
+**8. Interpret the 95% CI in the context of this problem. Is there evidence to reject the null?**
+
+_Type your answer here, replacing this text._
+
+
+\newpage
+
+## Open Heart Surgery 
+
+The amount of time to perform open heart surgery is normally distributed. Sixteen patients (chosen as a simple random sample from a hospital) underwent open heart surgery that took the following lengths of time (in minutes):
+
+```{r}
+op_time <- c(247.8648, 258.4343, 315.6787, 268.0563, 269.9372, 320.6821, 
+             280.5493, 225.3180, 243.8207, 251.5388, 304.9706, 277.3140, 
+             278.6247, 269.3418, 248.0131, 322.9812)
+surg_data <- data.frame(op_time)
+```
+
+**9. You wish to know if the mean operating time of open heart surgeries at this hospital exceeds four hours. Set up appropriate null and alternative hypotheses for investigating this issue.**
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+**10. Test the hypotheses you formulated in question 9 and assign the associated p-value to the object called `p_value_10`. (Do not use the `t.test` function for this question).**
+
+```{r}
+p_value_10 <- NULL # YOUR CODE HERE
+p_value_10
+
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p10.R")
+```
+
+**11. What are your conclusions in the context of this question?**
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+**12. Construct a 95% CI for the mean operating time (in *hours*). Round your lower and upper bounds to 3 decimal places and assign them to a vector called `CI_12`. Interpret the confidence interval in the context of this problem.**
+
+```{r}
+CI_12 <- NULL # YOUR CODE HERE
+CI_12
+
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p12.R")
+```
+_Type your answer here, replacing this text._
+
+\newpage
+
+**13. Suppose you were testing the hypotheses $H_0: \mu_d = 0$ and $H_a: \mu_d \neq 0$ in a paired design and obtain a p-value of 0.21 (mu_d is the mean difference). Which of the following could be a possible 95% confidence interval for $\mu_d$? Assign the letter corresponding to your answer to `p13`. For example, if your answer is a, assign p13 <- "a".**
+
+a. -2.30 to -0.70
+b. -1.20 to 0.90
+c. 1.50 to 3.80
+d. 4.50 to 6.90
+
+```{r}
+p13 <- NULL # YOUR CODE HERE
+p13
+
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p13.R")
+```
+
+\newpage
+
+**14. Suppose you were testing the hypotheses $H_0: \mu_d = 0$ and $H_a: \mu_d \neq 0$ in a paired design and obtain a p-value of 0.02. Also suppose you computed confidence intervals for $\mu_d$. Based on the p-value which one of the following is true? Assign the letter corresponding to your answer to `p14`.**
+
+a. Both a 95% CI and a 99% CI will contain 0.
+b. A 95% CI will contain 0, but a 99% CI will not.
+c. A 95% CI will not contain 0, but a 99% CI will.
+d. Neither a 95% CI nor a 99% CI interval will contain 0.
+
+```{r}
+p14 <- NULL # YOUR CODE HERE
+p14
+
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p14.R")
+```
