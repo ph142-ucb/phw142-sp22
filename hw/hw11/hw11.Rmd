@@ -1,0 +1,269 @@
+---
+title: "Problem Set 11"
+author: "Your name and student ID"
+date: "Today's date"
+output:
+  pdf_document: default
+---
+
+
+**Run this chunk of code to load the autograder package!**
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(testthat)
+```
+
+```{r, warning=F, message=F, echo=F}
+library(dplyr)
+library(ggplot2)
+library(tidyverse)
+```
+
+### Instructions 
+* Solutions will be released Tuesday, April 26th
+* This semester, homework assignments are for practice only and will not be turned in for marks.
+
+Helpful hints:
+
+-  Every function you need to use was taught during lecture! So you may need to revisit the lecture code to help you along by opening the relevant files on Datahub. Alternatively, you may wish to view the code in the condensed PDFs posted on the course website. Good luck!
+
+- Knit your file early and often to minimize knitting errors! If you copy and paste code for the slides, you are bound to get an error that is hard to diagnose. Typing out the code is the way to smooth knitting! We recommend knitting your file each time after you write a few sentences/add a new code chunk, so you can detect the source of knitting errors more easily. This will save you and the GSIs from frustration!
+
+- If your code runs off the page of the knitted PDF then you will LOSE POINTS! To avoid this, have a look at your knitted PDF and ensure all the code fits in the file (you can easily view it on Gradescope via the provided link after submitting). If it doesn't look right, go back to your .Rmd file and add spaces (new lines) using the return or enter key so that the code runs onto the next line.
+
+\newpage
+
+Parental leave is often compensated to some degree, but the amount of compensation varies greatly. You read a research article that stated, "across people of all incomes, 47% of leave-takers received full pay during their leave, 16% received partial pay, and 37% received no pay." 
+
+After reading this, you wonder what the distribution of parental leave payment is for low income households. Suppose you conduct a survey of leave-takers within households earning less than $30,000 per year. You surveyed 225 people (selected via a random sample) and found that 51 received full pay, 33 received partial pay, and 141 received no pay.
+
+**1. You would like to investigate whether the distribution of pay for households earning < $30,000 is different from that of all income levels. Does this correspond to a chi-square test of independence or a chi-square test for goodness of fit?**
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+**2. What are the expected counts of leave-takers among households with incomes < $30,000? Assign each expected count to the appropriate variable and to 2 decimal places.**
+
+```{r}
+full_pay <- NULL # YOUR CODE HERE
+partial_pay <- NULL # YOUR CODE HERE
+no_pay <- NULL # YOUR CODE HERE
+
+
+```
+
+```{r}
+. = ottr::check("tests/p2.R")
+```
+
+\newpage
+
+**3. State the null hypothesis in the context of the question.**
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+**4. Compute the chi-square statistic. Round your answer to 2 decimal places.**
+
+```{r}
+chi_sq <- NULL # YOUR CODE HERE
+chi_sq
+
+```
+
+```{r}
+. = ottr::check("tests/p4.R")
+```
+
+\newpage
+
+**5. Uncomment the cell (i.e., the term in the summation) that contributes the most to the test statistic.**
+
+```{r}
+# UNCOMMENT THE CORRECT ANSWER
+
+# largest_contribution <- 'full pay'
+# largest_contribution <- 'partial pay'
+# largest_contribution <- 'no pay'
+
+
+```
+
+```{r}
+. = ottr::check("tests/p5.R")
+```
+
+\newpage
+
+**6. Compute the p-value. Round your answer to 2 decimal places.**
+
+```{r}
+p_value <- NULL # YOUR CODE HERE
+p_value
+
+```
+
+```{r}
+. = ottr::check("tests/p6.R")
+```
+\newpage
+
+**7. Is there evidence against the null hypothesis? Uncomment your selection below.**
+
+```{r}
+# UNCOMMENT THE CORRECT ANSWER
+
+# conclusion <- 'in favor of null'
+# conclusion <- 'against null'
+
+
+```
+
+```{r}
+. = ottr::check("tests/p7.R")
+```
+
+\newpage
+
+Human papillomavirus (HPV) is a very common STI that most sexually active persons will encounter during their lifetimes. While many people clear the virus, certain strands can lead to adverse health outcomes such as genital warts and cervical cancer. 
+
+Suppose that you selected a random sample from a population and collected these data on age and HPV status for the sample:
+
+|Age Group    | HPV +        | HPV -          | Row total   |
+|:-----------:|:------------:|:--------------:|:-----------:|
+|14-19        | 160          | 492            | 652 (33.9%) |
+|20-24        | 85           | 104            | 189 (9.8%)  |
+|25-29        | 48           | 126            | 174 (9.1%)  |
+|30-39        | 90           | 238            | 328 (17.1%) |
+|40-49        | 82           | 242            | 324 (16.9%) |
+|50-59        | 50           | 204            | 254 (13.2%) |
+| Col total   | 515 (26.8%)  | 1406 (73.2%)   | 1921        |
+
+**8. What are the explanatory and response variables? Uncomment the appropriate answer.**
+
+```{r}
+# UNCOMMENT THE CORRECT ANSWER
+
+# variable_type <- c('explanatory: age group', 'response: HPV status')
+# variable_type <- c('explanatory: HPV status', 'response: age group')
+
+
+```
+
+```{r}
+. = ottr::check("tests/p8.R")
+```
+
+\newpage
+
+**9. State the null and alternative hypotheses to test whether there is a relationship between age group and HPV status.**
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+**10. Run the code below to examine the conditional distribution of age by HPV status. Based on this plot, which age group will contribute the most to the chi-square statistic? Explain why.**
+
+(That is, can you tell based on this plot when the observed count will differ most from the expected count under the null hypothesis of no relationship between age group and HPV status?) 
+
+```{r create-hpv.data, echo=F, out.width="80%", fig.align=T, message=F}
+age_group <- rep(c("14-19", "20-24", "25-29", "30-39", "40-49", "50-59"), 2)
+hpv_test <- c(rep("positive", 6), rep("negative", 6))
+number_of_women <- c(160, 85, 48, 90, 82, 50, 
+                     492, 104, 126, 238, 242, 204)
+
+hpv_data <- data.frame(age_group, hpv_test, number_of_women)
+
+hpv_data <- hpv_data %>% group_by(hpv_test) %>% 
+  mutate(sum_women = sum(number_of_women),
+         prop_women_age = number_of_women/sum_women)
+
+ggplot(hpv_data, aes(x = age_group, y = prop_women_age)) + 
+  geom_bar(aes(fill = hpv_test), stat = "identity", position = "dodge") +
+  theme_minimal(base_size = 15) +
+  labs(y = "Proportion", x = "Age", 
+       main = "Conditional distribution of age by HPV status")
+```
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+**11. Fill out the table of expected counts under the null hypothesis of no association between age group and HPV status. Round each number to 2 decimal places.**
+
+Expected counts:
+
+|Age Group    | HPV +                     | HPV -                     | 
+|:-----------:|:-------------------------:|:-------------------------:|
+|14-19        |          A                |          H                | 
+|20-24        |          B                |          I                | 
+|25-29        |          C                |          J                | 
+|30-39        |          D                |          K                | 
+|40-49        |          E                |          L                |
+|50-59        |          G                |          M                |
+
+```{r}
+A <- NULL # YOUR CODE HERE
+B <- NULL # YOUR CODE HERE
+C <- NULL # YOUR CODE HERE
+D <- NULL # YOUR CODE HERE
+E <- NULL # YOUR CODE HERE
+G <- NULL # YOUR CODE HERE
+H <- NULL # YOUR CODE HERE
+I <- NULL # YOUR CODE HERE
+J <- NULL # YOUR CODE HERE
+K <- NULL # YOUR CODE HERE
+L <- NULL # YOUR CODE HERE
+M <- NULL # YOUR CODE HERE
+
+```
+
+```{r}
+. = ottr::check("tests/p11.R")
+```
+
+\newpage
+
+**12. Calculate the test statistic. Round your answer to 2 decimal places.**
+
+```{r}
+chi_sq_p12 <- NULL # YOUR CODE HERE
+chi_sq_p12 
+
+```
+
+```{r}
+. = ottr::check("tests/p12.R")
+```
+
+\newpage
+
+**13. Calculate the p-value for your test statistic. Round your answer to 2 decimal places.**
+
+```{r}
+p_value_p13 <- NULL # YOUR CODE HERE
+p_value_p13 
+
+```
+
+```{r}
+. = ottr::check("tests/p13.R")
+```
+
+\newpage
+
+**14. Is there evidence against the null hypothesis? Uncomment your selection.**
+
+```{r}
+# UNCOMMENT THE CORRECT ANSWER
+# conclusion_p14 <- 'in favor of null'
+# conclusion_p14 <- 'against null'
+
+```
+
+
+## END
+
+
