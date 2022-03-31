@@ -1,0 +1,328 @@
+---
+title: "Lab 10: Proportions and Inference for Regression"
+author: 'Your name and Student ID'
+date: "Today's date"
+output: pdf_document
+---
+
+
+**Run this chunk of code to load the autograder package!**
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(testthat)
+```
+
+### Instructions 
+* Due date: Tuesday, April 19th, at 10:00pm PST with 2 hour grace period.
+* Late penalty: 50% late penalty if submitted within 24 hours of due date, no 
+marks for assignments submitted thereafter.
+* This assignment is graded on **correct completion**, all or nothing. You must pass all public tests and submit the assignment for credit.
+* Submission process: Follow the submission instructions on the final page. Make sure you do not remove any `\newpage` tags or rename this file, as this will break the submission.
+
+
+## Boston Data on Median Household Value and Distance to Employment Centers
+
+We are examining a dataset used to predict housing prices in the area around Boston (Harrison, D. and Rubinfeld, 1978). We wish to specifically examine the association of the measure of housing price (`medv`, median value of owner-occupied homes in the $1000s) and a measure of adjacency to employment (a weighted distance, `dis`, in miles). The data frame (Boston) is contained in another package (`MASS`), which we load into the object `boston2` below.
+
+```{r, message=F}
+### NOTE: All of the code is to get you started on the lab. You do not need to
+### understand any functions below that you have not seen before.
+
+# Load library with data
+library(MASS)
+
+### NOTE: This package has a function `select()` that can be confused with
+### dplyr's select. To overcome this, we first import the data we need and then
+### detach the library before loading dplyr.
+
+# List variables
+boston2 <- 
+  read.csv("data/Boston.csv")
+
+# Variable definition - take a quick look at the variables in the data frame
+# help(Boston)
+detach(package:MASS)
+library(broom)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(patchwork)
+library(testthat)
+
+### Normally when we are doing inference, we take a random sample to make an inference about the population. 
+### If you have time after the lab, take a random sample of 50 rows from the data and perform the analysis below to see how your results change.
+```
+
+\newpage
+
+## Section 1: Inference for Regression
+
+**1. [1 point] Use the `boston2` data to perform a linear regression of `medv` (median value of owner-occupied homes in $1000s) versus `dis` (weighted mean of distances to five Boston employment centers) and tidy the results. Assign the *linear model* to `p1`.** 
+
+```{r}
+p1 <- NULL # YOUR CODE HERE
+p1
+
+```
+
+```{r}
+. = ottr::check("tests/p1.R")
+```
+
+\newpage
+
+**2. Interpret the slope parameter and the p-value from the output above. What null and alternative hypotheses does this p-value refer to?** 
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+**3. [1 point] Derive a 95% CI for this slope parameter and assign the lower and upper bounds to `p3`. Round your bounds to 4 decimal places. In your opinion, would you expect the direction of this relationship to hold if the data were collected today?**
+
+```{r}
+p3 <- NULL # YOUR CODE HERE
+p3
+
+```
+
+```{r}
+. = ottr::check("tests/p3.R")
+```
+_Type your answer here, replacing this text._
+
+\newpage
+
+**4. [1 point] Use a function to look at the r-squared value for this model. Assign this value to `p4` and round to two decimal places. Does `dis` explain a lot of the variance in median household value? Would you expect it to?**
+
+```{r}
+p4 <- NULL # YOUR CODE HERE
+p4
+
+```
+
+```{r}
+. = ottr::check("tests/p4.R")
+```
+_Type your answer here, replacing this text._
+
+\newpage
+
+**5. [2 points] Make a plot with the raw data points, use `geom_smooth()` to add the line of best fit from the simple linear regression model (containing `medv` and `dis`), and use `geom_abline()` to add a horizontal line with a slope of 0 that crosses the y-axis at the average value of `medv` to vertically bisect the data points. Store your plot as the object `p5`.**
+
+```{r}
+p5 <- NULL # YOUR CODE HERE
+p5
+
+```
+
+```{r}
+. = ottr::check("tests/p5.R")
+```
+
+\newpage
+
+**6. Create plots to check the assumptions required for using simple linear models. You will first need to fit the linear model and then use the `augment()` function from the `broom` package to store the residuals and fitted values into a new data frame. Do the plots raise any concerns about the assumptions of the linear regression you just performed?** 
+
+```{r}
+
+# first plot
+plot1 <- NULL # YOUR CODE HERE
+plot1
+
+# second plot
+plot2 <- NULL # YOUR CODE HERE
+plot2
+
+# third plot
+plot3 <- NULL # YOUR CODE HERE
+plot3
+
+plot4 <- NULL # YOUR CODE HERE
+plot4
+
+```
+
+_Type your answer here, replacing this text._
+
+Regardless of your answer, we will continue using the model to make inferences about the relationship between `med` and `dis`.
+
+\newpage
+
+### Pointwise Confidence Intervals and Multiple Testing
+
+As you learned in lecture, there are two types of confidence intervals applicable to estimating a point on the plot which are related to whether one is predicting the population average among individuals with $X=x$ (**mean response**) or whether one is predicting the actual $Y$ for a particular individual (**single observation**). For this assignment, we will concentrate on the confidence interval for the mean response. We do so because it is rare to use statistical models in public health as forecasting models (predicting an individual's health in the future) and is more common to use them to estimate population-level changes (how the mean of a health variable changes in a population as we change exposure). However, as precision medicine becomes more of a reality and models more accurately predict health (i.e., have high $R^2$'s), then statistical forecasting may become more common in our field.
+
+**7. [1 point] Calculate four 95% confidence intervals for the mean response, one at each `dis` value: 2.5, 5.0, 7.5, and 10.0 miles. Create a vector of the lower bounds for each confidence interval rounded to two decimal places and assign it to `p12`.**
+
+**Hint: Use the `predict()` function and be sure to specify interval = "confidence"**
+
+OPTIONAL: If time allows, add the four CIs to a scatter plot of the data (along with the line of best fit).
+
+```{r}
+ci_dataframe <- data.frame(dis = c(2.5, 5.0, 7.5, 10))
+p7 <- NULL # YOUR CODE HERE
+p7
+
+```
+
+```{r}
+. = ottr::check("tests/p7.R")
+```
+
+\newpage
+
+**8. Interpret the point wise 95% confidence interval of the median house price when the distance = 10.** 
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+**9. Do the CI's differ in length for different values of `dis`? Why or why not?**
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+## Section 2: Inference for Proportions
+
+**The rest of the lab assignment is for practice only. You are responsible for understanding the material but these questions will not be graded.**
+
+## Tests of Changes in Sex Ratios Based on a Single Sample
+
+There is a long literature studying changes in sex-ratios of births due to stressful events, such as 9/11. In today's lab, we consider a relatively small study that recorded biomarkers of stress on pregnancy. In the group of subjects that had the highest markers of stress (based on cortisol), there were 14 births to males out of a total of 38.
+
+In this lab, we will compare the four methods we learned to calculate CIs for proportions. Recall that two of these methods involved hand calculations (though we can treat R as if it were a calculator) and two of the methods used built-in R functions.
+
+**10. Use the Normal approximation to construct a 95% confidence interval in this high stress group. We also called this specific method of constructing the CI the "large sample method". Assign the object `large_sample_ci` to a vector of the lower bound and upper bound rounded to 4 decimal places.**
+
+```{r large-sample-method}
+large_sample_ci <- NULL # YOUR CODE HERE
+large_sample_ci
+
+
+```
+
+```{r}
+. = ottr::check("tests/p10.R")
+```
+_Type your answer here, replacing this text._
+
+\newpage
+
+**11. Create the 95% CI again, this time using the R function that implements the Wilson Score method with a continuity correction. Round your answer to 4 decimal places.**
+
+```{r Wilson-score-method}
+wilson_score_ci <- NULL # YOUR CODE HERE
+wilson_score_ci
+
+
+```
+
+```{r}
+. = ottr::check("tests/p11.R")
+```
+_Type your answer here, replacing this text._
+
+\newpage
+
+**12. Create the 95% CI again, this time using the Plus 4 method. Round your answer to 4 decimal places.**
+
+```{r plus-4-method}
+plus_4_ci <- NULL # YOUR CODE HERE
+plus_4_ci
+
+
+```
+
+```{r}
+. = ottr::check("tests/p12.R")
+```
+_Type your answer here, replacing this text._
+
+\newpage
+
+**13. Create the 95% CI again, this time using the R function that implements the Clopper Pearson (Exact) method. Round your answer to 4 decimal places.**
+
+```{r Clopper-Pearson-method}
+exact_method_ci <- NULL # YOUR CODE HERE
+exact_method_ci
+
+
+```
+
+```{r}
+. = ottr::check("tests/p13.R")
+```
+_Type your answer here, replacing this text._
+
+\newpage
+
+**14. Here is a code template to help you to graphically present these estimates. Graphical presentations of estimates and their CIs is very useful for assessing whether the CIs overlap the null hypothesized value and tends to be better than presenting tables of estimates to readers of your research. Fill in the code below with your estimates for each confidence interval method, assign `p14` to the plot of the confidence intervals, then answer the question below.**
+
+```{r}
+# First make a tibble (an easy way to make a data frame) with the data about
+# each confidence interval. To do this, replace each instance of 0.00 with the
+# estimate from your calculations above.
+sex_CIs <- tibble(method   = c("large sample", "Exact", "Wilson", "Plus 4"),
+                  lower_CI = c(0.0           , 0.0    ,  0.0    ,  0.0),
+                  upper_CI = c(0.0           , 0.0    ,  0.0    ,  0.0),
+                  estimate = c(0.0           , 0.0    ,  0.0    ,  0.0)
+                  )
+# Build the ggplot incrementally, to understand how it works.
+# Step 1: (why do we put a horizontal line at 50?)
+ggplot(data = sex_CIs, aes(x = method, y = estimate)) + 
+  geom_point() + 
+  geom_hline(aes(yintercept = 50), lty = 2)
+
+
+# Step 2:
+ggplot(data = sex_CIs, aes(x = method, y = estimate)) + 
+  geom_point() +
+  geom_hline(aes(yintercept = 50), lty = 2) +
+  geom_segment(aes(x = method, xend = method, y = lower_CI, yend = upper_CI)) +
+  labs(y = "Estimate with 95% CI")
+
+
+p14 <- NULL # YOUR CODE HERE
+p14
+
+
+
+```
+
+```{r}
+. = ottr::check("tests/p14.R")
+```
+
+What does `geom_segment()` do? In particular, what do `x`, `xend`, `y` and `yend` specify in this case?
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+**15. Based on this plot, what can you say about the confidence intervals for the sex ratio in the high stress group?**
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+### Submission
+
+For assignments in this class, you'll be submitting using the **Terminal** tab in the pane below. In order for the submission to work properly, make sure that:
+
+1. Any image files you add that are needed to knit the file are in the `src` folder and file paths are specified accordingly.
+2. You **have not changed the file name** of the assignment.
+3. The file knits properly.
+
+Once you have checked these items, you can proceed to submit your assignment.
+
+1. Click on the **Terminal** tab in the pane below.
+2. Copy-paste the following line of code into the terminal and press enter.
+
+cd; cd ph142-sp22/lab/lab10; python3 turn_in.py
+
+3. Follow the prompts to enter your Gradescope username and password.
+4. If the submission is successful, you should see "Submission successful!" appear as the output. **Check your submission on the Gradescope website to ensure that the autograder worked properly and you received credit for your correct answers. If you think the autograder is incorrectly grading your work, please post on piazza!**
+5. If the submission fails, try to diagnose the issue using the error messages--if you have problems, post on Piazza under the post "Datahub Issues".
+
+The late policy will be strictly enforced, **no matter the reason**, including submission issues, so be sure to submit early enough to have time to diagnose issues if problems arise.
