@@ -1,0 +1,264 @@
+---
+title: "Lab 09: T tests and ANOVA"
+author: "Your name and student ID"
+date: "today's date"
+output: pdf_document
+---
+
+
+**Run this chunk of code to load the autograder package!**
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(testthat)
+```
+
+### Instructions 
+* Due date: Monday, April 11th at 11:59pm PST.
+* Late penalty: 50% late penalty if submitted within 24 hours of due date, no 
+marks for assignments submitted thereafter.
+* This assignment is graded on **correct completion**, all or nothing. You must pass all public tests and submit the assignment for credit.
+* Submission process: Follow the submission instructions on the final page. Make sure you do not remove any `\newpage` tags or rename this file, as this will break the submission.
+
+
+### Part 1: T tests and NHANES
+
+The NHANES is a large national survey conducted by the CDC. We will look at a reduced set of data from the NHANES for this lab. 
+
+```{r read, echo=FALSE}
+# load in the appropriate libraries
+library(readr)
+library(ggplot2)
+library(dplyr)
+library(broom)
+library(testthat)
+
+# Read CSV into R
+# include data/ because the file is in the data folder
+nhanes <- read_csv("data/nhanes.csv") 
+
+nhanes <- na.omit(nhanes) # this code skip rows with missing values
+```
+
+**1. [1 point] We are interested in looking at the systolic blood pressure, `bpxsy`, by history of smoking, `hs`. Start by generating an appropriate box plot to look at these data.**
+
+```{r}
+plot1 <- NULL # YOUR CODE HERE
+plot1
+
+```
+
+```{r}
+. = ottr::check("tests/p1.R")
+```
+
+\newpage
+
+**2. [1 point] Now generate a set of faceted histograms that show the same data.**
+
+```{r hist, echo=TRUE}
+plot2 <- NULL # YOUR CODE HERE
+plot2
+
+```
+
+```{r}
+. = ottr::check("tests/p2.R")
+```
+
+\newpage
+
+**3. [1 point] Summarize the means and standard deviations of the systolic blood pressurea for each category of `hs`. Assign `p3` to a dataframe with the mean systolic blood pressures assigned to `mean_bp` and the standard deviations assigned to `sd_bp`.**
+
+```{r hist2, echo=TRUE}
+p3 <- NULL # YOUR CODE HERE
+p3
+
+```
+
+```{r}
+. = ottr::check("tests/p3.R")
+```
+
+\newpage
+
+**4. Do we meet the all of the assumptions to run a two-sample t-test? Why or why not?**
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+**5. State the null and alternative hypotheses in the context of this question.**
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+**6. [1 point] Use an R function to test if the variability gives enough evidence to reject the null hypothesis of no difference between mean blood pressure by smoking history.**
+
+```{r, echo=TRUE}
+p6 <- NULL # YOUR CODE HERE
+p6
+
+```
+
+```{r}
+. = ottr::check("tests/p6.R")
+```
+
+\newpage
+
+**7. Use these results to interpret your p-value in the context of this question. Do you reject or fail to reject the null hypothesis?**
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+Repeat your analysis above without using the `t.test()` function.
+
+**8. [1 point] First calculate the test statistic by hand. Do not round and assign this value to `t_stat`.**
+
+```{r}
+# this code gives you the number of smokers in the dataset
+n_s <- nrow(nhanes %>% filter(hs == 'History of smoking'))
+n_s
+
+# this code gives you the number of non-smokers in the dataset
+n_ns <- nrow(nhanes %>% filter(hs == 'No'))
+n_ns
+
+# calculate your test statistic. You can make more objects if you wish.
+t_stat <- NULL # YOUR CODE HERE
+t_stat
+
+
+```
+
+```{r}
+. = ottr::check("tests/p8.R")
+```
+
+**9. [1 point] Now compare your test statistic to a t-distribution with df = 558 and calculate the p-value. This is an approximation using the smaller of the two sample sizes - 1.**
+
+```{r,echo=TRUE}
+
+p_value <- NULL # YOUR CODE HERE
+p_value
+
+```
+
+```{r}
+. = ottr::check("tests/p9.R")
+```
+
+\newpage
+
+**10. [1 point] Finally, construct a 99% confidence interval for these data. Interpret the interval in the context of this question and decide whether or not to reject the null hypothesis.**
+
+```{r}
+lowerbound <- NULL # YOUR CODE HERE
+upperbound <- NULL # YOUR CODE HERE
+conf_int <- c(lowerbound, upperbound)
+conf_int
+
+```
+
+```{r}
+. = ottr::check("tests/p10.R")
+```
+_Type your answer here, replacing this text._
+
+\newpage
+
+## Part 2: ANOVA
+
+**11. [1 point] We are interested in looking at the systolic blood pressure, `bpxsy1`, by BMI category, `bmicat`. Generate an appropriate box plot to visualize these data.**
+
+```{r}
+plot11 <- NULL # YOUR CODE HERE
+plot11
+
+```
+
+```{r}
+. = ottr::check("tests/p11.R")
+```
+
+\newpage
+
+**12. [1 point] Now generate a set of faceted histograms that show the same data. It might be useful to assign a fill color to each category.**
+
+```{r hist-aov, echo=TRUE}
+plot12 <- NULL # YOUR CODE HERE
+plot12
+
+```
+
+```{r}
+. = ottr::check("tests/p12.R")
+```
+
+\newpage
+
+**13. [1 point] Summarize the means and standard deviations of the outcome for each BMI category. Assign `p13` to a dataframe with the mean systolic blood pressure assigned to `mean_bp` and the standard deviation assigned to `sd_bp`.**
+
+```{r hist2-aov, echo=TRUE}
+p13 <- NULL # YOUR CODE HERE
+p13
+
+```
+
+```{r}
+. = ottr::check("tests/p13.R")
+```
+
+\newpage
+
+**14. [1 point] Use an R function to test whether there is evidence to reject the null hypothesis of no difference between mean blood pressure by BMI category.**
+
+```{r,echo=TRUE}
+p14 <- NULL # YOUR CODE HERE
+tidy(p14) # tidy displays your output. It lives in the `broom` package
+
+```
+
+```{r}
+. = ottr::check("tests/p14.R")
+```
+
+\newpage
+
+**15. [1 point] Conduct a Tukey's HSD test using these data. What can you conclude assuming a standard error rate of 5%?**
+
+```{r,echo=TRUE}
+p15 <- NULL # YOUR CODE HERE
+tidy(p15) 
+
+```
+
+```{r}
+. = ottr::check("tests/p15.R")
+```
+_Type your answer here, replacing this text._
+
+\newpage
+
+### Submission
+
+For assignments in this class, you'll be submitting using the **Terminal** tab in the pane below. In order for the submission to work properly, make sure that:
+
+1. Any image files you add that are needed to knit the file are in the `src` folder and file paths are specified accordingly.
+2. You **have not changed the file name** of the assignment.
+3. The file knits properly.
+
+Once you have checked these items, you can proceed to submit your assignment.
+
+1. Click on the **Terminal** tab in the pane below.
+2. Copy-paste the following line of code into the terminal and press enter.
+
+cd; cd phw142-sp22/lab/lab09; python3 turn_in.py
+
+3. Follow the prompts to enter your Gradescope username and password.
+4. If the submission is successful, you should see "Submission successful!" appear as the output. **Check your submission on the Gradescope website to ensure that the autograder worked properly and you received credit for your correct answers. If you think the autograder is incorrectly grading your work, please post on piazza!**
+5. If the submission fails, try to diagnose the issue using the error messages--if you have problems, post on Piazza under the post "Datahub Issues".
+
+The late policy will be strictly enforced, **no matter the reason**, including submission issues, so be sure to submit early enough to have time to diagnose issues if problems arise.
