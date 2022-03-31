@@ -1,0 +1,349 @@
+---
+title: "Problem Set 09"
+author: "Your name and student ID"
+date: "Today's date"
+output:
+  pdf_document: default
+---
+
+
+**Run this chunk of code to load the autograder package!**
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(testthat)
+```
+
+```{r, warning=F, message=F, echo=F}
+library(dplyr)
+library(ggplot2)
+library(tidyverse)
+library(ggrepel)
+library(broom)
+```
+
+### Instructions 
+* Solutions will be released on Tuesday, April 12th, by 9:30am. 
+* This semester, homework assignments are for practice only and will not be turned in for marks.
+
+Helpful hints:
+
+- Every function you need to use was taught during lecture! So you may need to revisit the lecture code to help you along by opening the relevant files on Datahub. Alternatively, you may wish to view the code in the condensed PDFs posted on the course website. Good luck!
+
+- Knit your file early and often to minimize knitting errors! If you copy and paste code for the slides, you are bound to get an error that is hard to diagnose. Typing out the code is the way to smooth knitting! We recommend knitting your file each time after you write a few sentences/add a new code chunk, so you can detect the source of knitting errors more easily. This will save you and the GSIs from frustration! 
+
+\newpage
+
+## Section 1: Abstract interpretation
+
+Read the following abstract and answer the questions that follow. 
+
+*J Asthma. 2018 Oct 11:1-12. doi: 10.1080/02770903.2018.1508471.*
+*Impact of scenario based training on asthma first aid knowledge and skills in school staff: an open label, three-arm, parallel-group repeated measures study.*
+*Luckie K1, Saini B1, Soo YYB1,2, Kritikos V1,3, Charles Collins JB1, Jane Moles R1.*
+
+OBJECTIVE:
+To test the hypothesis that scenario-based skills training is more effective than knowledge training alone in improving the asthma first aid (AFA) skills of school personnel. Education developed specifically for non-primary caregivers such as school staff is vital to minimize the risk of mortality associated with asthma.
+
+METHODS:
+Schools were allocated to one of three arms to compare AFA knowledge and AFA skills. Arm 1 underwent conventional asthma training, arm 2 underwent scenario-based training and arm 3 had a combination of the two. Conventional asthma training involved a didactic oral presentation. The scenario-based skills training required the participant to describe and demonstrate how they would manage a child having a severe exacerbation of asthma using equipment provided. Follow-up occurred at 3 weeks post baseline and again between 3-7 months after the first training/education visit.
+
+RESULTS:
+Nineteen primary schools (204 participants) were recruited. One-way ANOVA and Bonferroni Post-Hoc Tests showed there was a significant difference in AFA skills scores between the study arms who underwent scenario-based training; arms 2 and 3 (91.5% and 91.1%) and arm 1 who underwent conventional asthma training (77.3%) (p<0.001). AFA knowledge improved significantly in all study arms with no differences between study arms. Improvements seen in both AFA knowledge and AFA skills were maintained over time.
+
+CONCLUSIONS:
+Scenario-based training was superior to conventional didactic asthma training for AFA skills acquisition and overall competency in the administration of AFA and should be included in future asthma training programs.
+
+\newpage
+
+**1. Two methods of hypothesis testing (types of tests) are mentioned in the abstract. What is the null hypothesis for each of these tests?**
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+**2. There are two outcomes of interest in this study. For which *outcome* would you conclude that there is a significant difference between the training groups?**
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+**3. If you were a school administrator, why might you choose the arm 3 training?**
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+**4. List one question you might want to ask about the methods, sample, or results that would help you interpret the findings of this study.**
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+**5. What is another test that could have been considered for these data?**
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+## Section 2: ANOVA and Tukey's HSD 
+
+For this question we will use the data from the NHANES survey.
+
+```{r read, echo=FALSE}
+# Read CSV into R
+nhanes <- read_csv("data/nhanes.csv")
+head(nhanes)
+
+nhanes <- na.omit(nhanes) # remove rows with missing values
+```
+
+\newpage
+
+**6. Generate a dataframe of the mean and standard deviations of blood lipid level, `lbdldl`, by blood pressure group, `bpcat`.**
+
+```{r}
+p6 <- NULL # YOUR CODE HERE
+p6
+
+```
+
+```{r}
+. = ottr::check("tests/p6.R")
+```
+
+\newpage
+
+**7. Create a box plot to help you visualize these data.**
+
+```{r}
+p7 <- NULL # YOUR CODE HERE
+p7
+
+```
+
+```{r}
+. = ottr::check("tests/p7.R")
+```
+
+\newpage
+
+**8. Conduct an ANOVA test followed by Tukey's HSD. Assign the Tukey's HSD test to the variable `tukey`.**
+
+```{r, warning = F}
+tukey <- NULL # YOUR CODE HERE
+# p8 <- tidy(tukey) # uncomment this line
+
+```
+
+```{r}
+. = ottr::check("tests/p8.R")
+```
+
+\newpage
+
+**9. What are the null and alternative hypotheses for this test?**
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+**10. What can you conclude from your analysis?**
+
+_Type your answer here, replacing this text._
+
+\newpage
+
+## Section 3: Non-parametric Tests
+
+You are testing students' change in test scores following an intensive tutoring session. You have the following data from a small group of students where each student is tested before and after the tutoring session. Each row represents one student.  
+
+|Time 1   |Time 2|
+|---------|------|
+|65       |77    |
+|87       |100   |
+|77       |75    |
+|90       |89    |
+|70       |80    |
+|84       |81    |
+|92       |91    |
+|83       |96    |
+|85       |84    |
+|91       |89    |
+|68       |88    |
+|72       |100   |
+|81       |81    |
+|---------|------|
+
+```{r}
+# this code makes a dataframe of the table you see above
+test_scores <- tribble(
+  ~time1, ~time2,
+  65, 77,
+  87, 100,
+  77, 75,
+  90, 89,
+  70, 80,
+  84, 81,
+  92, 91,
+  83, 96,
+  85, 84,
+  91, 89,
+  68, 88,
+  72, 100,
+  81, 81)
+
+```
+
+
+**11. Calculate the appropriate non-parametric test for these data by hand.**
+
+```{r}
+p11 <- NULL # YOUR CODE HERE
+p11
+
+```
+
+```{r}
+. = ottr::check("tests/p11.R")
+```
+
+\newpage
+
+**12. Check your work using a function in R. Keep your answer as a decimal rounded to 4 decimal places. Report your p-value and save it to the variable `p12`.**
+
+```{r, warning=FALSE}
+p12 <- NULL # YOUR CODE HERE
+p12
+
+```
+
+```{r}
+. = ottr::check("tests/p12.R")
+```
+
+\newpage
+
+## Section 4: Voting during the 1992 election
+
+Let's consider some historical data on voting patterns across US counties. This code loads in the dataframe called `counties`:
+
+```{r}
+load("data/A10_counties.sav")
+```
+
+These data are from the 1992 election and looks at the percent of votes cast (for each county) for the `democrat` (Bill Clinton), `republican` (George Bush), and independent presidential nominees (Ross `Perot`). 
+
+Ideally, if you were interested in voting patterns, you might look at the relationship between individual characteristics and whether each individual voted Democrat or Republican. However, data like that is often hard to come by. The `counties` data provide data on 3141 counties. Use `View()` to examine these data briefly and read the labels corresponding to the variables. Note that Alaska is not included and that two other counties with populations = 0 have also been excluded.
+
+As discussed in class, we have the entire population (not just a sample), so strictly speaking we don't need to perform statistical inference. However, we might pretend this is a sample so that we can apply the techniques of inference and gain competence creating and interpreting a linear model.
+
+\newpage
+
+**13. Make a subset of the original `counties` dataset called `counties_CA` that only includes California counties. Then use this new dataset to plot the relationship between the percent of votes cast for the Democratic candidate (`democrat`) and the population density of the county (`pop.density`).** 
+
+```{r}
+p13 <- NULL # YOUR CODE HERE
+p13
+
+```
+
+```{r}
+. = ottr::check("tests/p13.R")
+```
+
+\newpage
+
+**14. The above plot is difficult to interpret. The distribution of population density is skewed right, with a few counties having much higher densities than the majority of counties. To see which counties these are, we will use `geom_text_repel` from the library `ggrepel`. This will label the points with the county names. The template for using this function is: `geom_text_repel(aes(label = your_labeling_var))`. The labeling variable should be the county names. Create the same plot as in question 1 with this added `geom_text_repel()` component.**
+
+```{r}
+p14 <- NULL # YOUR CODE HERE
+p14
+
+```
+
+```{r}
+. = ottr::check("tests/p14.R")
+```
+
+The current issue with these data is that San Francisco has a much higher population density than other counties, and that generally there is a large right skew in the distribution of the population density variable. 
+
+If we tried to fit a linear model to these data, it would not fit well because the relationship between population density and the response variable is not linear. However, this is the perfect situation to try transforming the x-variable.
+
+\newpage
+
+**15. Add a new variable to the `counties_CA` dataset called `log_pop_density` that is the log of the population density variable. Remake the plot above using this new variable, add a smoothed fitted line, and assign this to `p15`.**
+
+```{r}
+p15 <- NULL # YOUR CODE HERE
+p15
+
+```
+
+```{r}
+. = ottr::check("tests/p15.R")
+```
+
+\newpage
+
+**16. Describe the relationship between the (logged) population density and the response variable in terms of the strength, form, direction, and outliers. Calculate the correlation coefficient and assign this value to `p16`.**
+
+```{r}
+p16 <- NULL # YOUR CODE HERE
+p16
+
+```
+
+```{r}
+. = ottr::check("tests/p16.R")
+```
+_Type your answer here, replacing this text._
+
+\newpage
+
+**17. Run a linear regression model of the percent votes cast for the democratic candidate as a function of the logged population density. Use the `tidy()` function to show the slope and intercept estimates. Interpret the relationship between the logged population density and the response variable. Use another function from the `broom` package show the r-squared value. Assign this value to `p5` and interpret its meaning in the context of the problem.**
+
+```{r}
+p17 <- NULL # YOUR CODE HERE 
+p17
+
+```
+
+```{r}
+. = ottr::check("tests/p17.R")
+```
+_Type your answer here, replacing this text._
+
+\newpage
+
+**18. Fit the augmented model and assign this to `CA_augment`. Then create the 4 plots used to check the assumptions for using linear regression.**
+
+```{r}
+
+CA_augment <- NULL # YOUR CODE HERE
+CA_augment
+
+plot1 <- NULL # YOUR CODE HERE
+plot1
+
+plot2 <- NULL # YOUR CODE HERE
+plot2
+
+plot3 <- NULL # YOUR CODE HERE
+plot3
+
+plot4 <- NULL # YOUR CODE HERE
+plot4
+
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/p18.R")
+```
+
+**19. Comment on each of the plots and conclude whether any assumptions appear to be violated. Don't forget to comment on the one assumption that cannot be investigated using plots!**
+
+_Type your answer here, replacing this text._
+
+
+
