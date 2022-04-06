@@ -1,0 +1,434 @@
+---
+title: "From Z to T"
+output:
+  beamer_presentation:
+    slide_level: 3
+  ioslides_presentation: default
+  slidy_presentation: default
+header-includes:
+- \usetheme{Goettingen}
+- \renewcommand{\textbf}{\structure}
+- \renewcommand{\mathbf}{\structure}
+- \addtobeamertemplate{navigation symbols}{}{ \usebeamerfont{footline} }
+- \addtobeamertemplate{navigation symbols}{}{ \usebeamercolor[fg]{footline} }
+- \addtobeamertemplate{navigation symbols}{}{ \insertframenumber/\inserttotalframenumber
+  }
+- \usepackage[os=win]{menukeys}
+- \usepackage{soul}
+- \usepackage{xcolor}
+- \usepackage{caption}
+- \usepackage[os=win]{menukeys}
+- \usepackage{copyrightbox}
+classoption: aspectratio=169
+---
+
+<!-- libraries -->
+```{r,include=FALSE,purl=FALSE}
+library(knitr) # for include_graphics() 
+library(dplyr)
+```
+
+## Roadmap
+
+### Roadmap
+
+Part 1 of the course looked at visualizing and describing data
+
+- Continuous(histograms, box plots, mean, median, variance, standard deviation etc.)
+- Categorical (bar charts, stacked bars, frequencies/percents marginal and conditional probabilities)
+
+Part II introduced key concepts in probability and distributions
+
+- Probability rules (independence, addition and decomposition, multiplication, Bayes theorem)
+- Continuous distribution (Normal)
+- Discreet distributions (Binomial and Poisson)
+- Sampling variability, central limit theorem, CI and hypothesis testing
+
+Part III will put these together and build your toolkit for statistical testing
+
+### Roadmap
+In deciding what statistical test to use we will often be thinking about:
+
+- The type of data (continuous vs categorical)
+- How many groups we are comparing 
+- Is there an inherent relationship between the measurements (dependence)?
+- Is there a theoretical distribution that is a good fit for the data?
+
+## Reduced conditions for inference about a mean
+
+### Reduced conditions for inference about a mean
+
+- Data is a SRS form a much larger population (really important)
+- Observations follow a Normal distribution (some leeway)
+
+### Recap: Z testing
+- We have been looking at variables that are continuous in nature
+- For the last few lectures we have assumed that the population standard deviation ($\sigma$)was known to us
+- We conducted the z-test and created CIs using this known $\sigma$
+
+- Today we will generalize this framework to a more realistic setting where $\sigma$ is unknown.  We will use s, the sample standard deviation as an estimate of $\sigma$
+
+### Estimating the standard error based on the sample
+
+- Previously, we knew the standard error of the mean to be $$\frac{\sigma}{\sqrt{n}}$$
+- Now, we don't know $\sigma$, so we estimate the standard error by 
+
+$$\frac{s}{\sqrt{n}}$$
+where $s$ is the sample standard deviation.
+
+### standard deviation vs standard error
+
+- Variance $\sigma^2$: average squared deviation from the mean(absolute value)
+- Standard Deviation ( $\sigma$ for a parameter or S for a sample)
+      - square root of the variance of all observations:
+      - **on average how far do our values deviate from the samplemean**
+- Standard Error (SE):
+      - The standard deviation of a statistic estimated from the data is the standard error of the statistic.
+      - The standard error is $\ se= s/\sqrt{n}$
+      - The standard error is the sd of all sample means
+      - Tells how close our test statistic is to the true value. 
+      - **on average how far does our test statistic move from the true population mean?**
+  
+
+### Recall the z-test!
+
+$$z = \frac{\bar{x}-\mu}{\sigma/\sqrt{n}}$$
+
+## the t-test and t-distribution
+
+### Meet the t-test!
+```{r, fig.align='center', out.width="40%", echo=FALSE }
+knitr::include_graphics("guinness.png")
+```
+
+
+### T-test
+Thanks to William Gosset (published anonymously) and the Guinness company's strategy of hiring statisticians, if we are interested in comparing mean values of a variable to a hypothesized null we can use a t-test.
+
+
+### Meet the t-test!
+$$t = \frac{\bar{x}-\mu}{s/\sqrt{n}}$$
+
+- What is the difference between z and t?
+- The t-test is more variable than the z-test statistic because we have to 
+substitute $s$ for $\sigma$. Because $s$ is a statistic, it varies across samples.
+- Because of this substitution, the t-test will not follow a Normal(0, 1) distribution. It
+is *more* variable than the standard Normal. Thus, we need a distribution that 
+is like the standard Normal but a little bit wider.
+
+### Variability and sample size
+What do we know about our estimate of mean and variability as the sample size grows?
+
+### Introducing the t distribution
+- Like the standard Normal distribution, but wider.
+- It's width depends on $n$, the sample size which determines the **degrees of freedom**
+
+This is because as $n$ increases,
+our estimate $s$ gets better and better, and approaches $\sigma$. Thus, as $n$
+increases the t-distribution approaches a Normal(0, 1) distribution.
+
+### Introducing the t distribution
+```{r, echo= F, fig.align='center', out.width="80%", warning=FALSE, message=FALSE}
+library(ggplot2)
+ggplot(data = data.frame(x = c(-3, 3)), aes(x)) +
+  stat_function(fun = dnorm, n = 101, args = list(mean = 0, sd = 1), aes(col = "N(0,1)")) +
+  theme_minimal(base_size = 15) +
+  stat_function(fun = dt, n = 101, args = list(df = 2), aes(col = "t(df=2)")) +
+  stat_function(fun = dt, n = 101, args = list(df = 4), aes(col = "t(df=4)")) +
+  stat_function(fun = dt, n = 101, args = list(df = 9), aes(col = "t(df=9)")) +
+  scale_color_manual(values = c("black", "#1b9e77", "#d95f02","blue")) +
+  labs(y = "Density", title = "Comparing N(0,1) to t-distributions")
+```
+
+### Meet the t-test!
+
+$$t = \frac{\bar{x}-\mu_0}{s/\sqrt{n}}$$
+The one-sample t statistic has a t distribution with $n-1$ **degrees of freedom**
+
+You calculate the t statistic using $\bar{x}$ and $s$ estimated from your sample,
+and $n$ which is also a property of your sample, and $\mu_0$ from the null
+hypothesis. Then compute the probability of observing a value of t or more extreme.
+
+### Assumptions of the t-test
+  - The dependent variable must be continuous (interval/ratio).
+  - The observations are independent of one another.
+  - Data come from a random sample of the underlying population.
+  - The dependent variable should be approximately normally distributed.
+  - The dependent variable should not contain any outliers.
+
+
+### Guess the R functions
+
+```{r t-functions, eval=F, echo=TRUE}
+pt(q = , df = , lower.tail = )
+qt(p = , df = , lower.tail = )
+```
+
+Which one would we use to calculate the p-value for a hypothesis test after we
+calculated the t-test statistic? `pt` or `qt`?
+
+## Confidence intervals based on t
+
+### Calculating a confidence interval for the t-test
+
+Draw an SRS of size $n$ from a large population having unknown mean $\mu$ and
+unknown standard deviation $\sigma$. A level C **confidence interval for $\mu$**
+is: 
+
+$$\bar{x}\pm t^*\frac{s}{\sqrt{n}}$$
+where $t^*$ is the critical value for the $t(n-1)$ density curve with area C
+between $-t*$ and $t*$. 
+
+Supposing we had $n=100$, what is $t^*$ for a 95% confidence interval?
+
+```{r, eval=F, echo=TRUE}
+qt(p = 0.975, df = 99)
+```
+### Example: Testosterone and obesity in adolescent males (pg 422 B&M Ed 4)
+
+Here are the data for $n=25$ adolescent males between the ages of 14 and 20:
+
+```{r, message=F, warning=F, echo=TRUE}
+library(dplyr)
+testosterone <- c(0.30, 0.24, 0.19, 0.17, 0.18, 0.23, 0.24, 0.06, 0.15,
+                  0.17, 0.18, 0.17, 0.15, 0.12, 0.25, 0.25, 0.25, 0.32, 
+                  0.35, 0.37, 0.39, 0.46, 0.49, 0.42, 0.36)
+dat_test <- data.frame(testosterone)
+```
+
+### Example: Testosterone and obesity in adolescent males (pg 422 B&M Ed 4)
+
+Use R to calculate a 95% confidence interval for testosterone. We can do this 
+using `summarize`
+
+```{r, echo=TRUE}
+dat_test %>% summarize(sample_mean = mean(testosterone),
+                       sample_sd = sd(testosterone),
+                       sample_size = length(testosterone),
+                       sample_se = sample_sd/sqrt(sample_size))
+```
+
+
+### Example: Testosterone and obesity in adolescent males (pg 422 B&M Ed 4)
+We still need the $t^*$ value:
+
+```{r, echo=TRUE}
+t_star <- qt(p = 0.975, df = 24)
+t_star
+```
+
+### Example: Testosterone and obesity in adolescent males (pg 422 B&M Ed 4)
+
+Expand the previous code chunk to calculate the margin of error (which uses the
+critical $t^*$ value), and then calculate the lower and upper CI
+
+```{r, echo=TRUE}
+dat_test %>% summarize(sample_mean = mean(testosterone),
+                       sample_sd = sd(testosterone),
+                       sample_size = length(testosterone),
+                       sample_se = sample_sd/sqrt(sample_size),
+                       margin_of_error = sample_se*t_star, 
+                       lower_CI = sample_mean - margin_of_error, 
+                       upper_CI = sample_mean + margin_of_error)
+```
+
+### Hypothesis testing with unknown $\sigma$ using the t-test
+
+Draw an SRS of size $n$ from a large population having unknown mean $\mu$ and 
+unknown standard deviation $\sigma$. To test the hypothesis $H_0: \mu=\mu_0$,
+calculate the t statistic:
+
+$$t=\frac{\bar{x}-\mu_0}{s/\sqrt{n}}$$
+
+### Hypothesis testing with unknown $\sigma$ using the t-test
+In terms of a variable T having the $t(n-1)$ distribution, the p-value for a
+test of $H_0$ against
+
+$H_a$: $\mu > \mu_0$ is $P(T \geq t)$
+
+```{r, out.width="30%", echo=F}
+upper <- ggplot(data = data.frame(x = c(-4, 4)), aes(x)) + 
+  geom_area(stat = "function", fun = dt, args = list(df=10),
+            xlim = c(1.7, 4), fill = "orange") +
+  stat_function(fun = dt, n = 101, args = list(df=10)) +
+  theme_minimal(base_size = 15) + 
+  labs(title = "One-sided (above)", y = "Density", x = "") +
+  theme(aspect.ratio=1) 
+upper
+```
+
+
+### Hypothesis testing with unknown $\sigma$ using the t-test
+$H_a$: $\mu < \mu_0$ is $P(T \leq t)$
+
+```{r, out.width="30%", echo=F}
+lower <- ggplot(data = data.frame(x = c(-4, 4)), aes(x)) + 
+  geom_area(stat = "function", fun = dt, args = list(df=10),
+            xlim = c(-4, -1.7), fill = "orange") +
+  stat_function(fun = dt, n = 101, args = list(df=10)) +
+  theme_minimal(base_size = 15) + 
+  labs(title = "One-sided (below)", y = "Density", x = "") +
+  theme(aspect.ratio=1)
+lower
+```
+
+### Hypothesis testing with unknown $\sigma$ using the t-test
+$H_a$: $\mu \neq \mu_0$ is $2\times P(T \geq |t|)$
+
+```{r, out.width="30%", echo=F}
+both <- ggplot(data = data.frame(x = c(-3, 3)), aes(x)) + 
+  geom_area(stat = "function", fun = dt, args = list(df=25),
+            xlim = c(1.7, 3), fill = "orange") +
+  geom_area(stat = "function", fun = dt, args = list(df=25),
+            xlim = c(-3, -1.7), fill = "orange") +
+  stat_function(fun = dt, n = 101, args = list(df=25)) +
+  theme_minimal(base_size = 15) + 
+  labs(title = "Two-sided", y = "Density", x = "") +
+  theme(aspect.ratio=1)
+
+#library(patchwork)
+both
+#upper + lower + both + plot_layout() 
+```
+
+## Example and t-testing in R
+
+### Example of a t-test (pg 426 B&M Ed 4)
+
+Here are 18 measures of pulse wave velocity (PWV) from a sample of children
+diagnosed with progeria, a genetic disorder that produces rapid aging.
+
+```{r, echo=TRUE}
+pwv <- c(18.8, 17.6, 17.5, 16.0, 14.8, 14.1, 13.7, 13.1, 12.9,
+         12.9, 12.4, 10.1, 9.3,  9.1,  8.3,  8.3,  7.9,  7.2)
+
+pwv_dat <- data.frame(pwv)
+```
+
+
+### Example of a t-test (pg 426 B&M Ed 4)
+
+pwv measures greater than 6.6 are considered abnormally high. We would like to 
+test the hypothesis that the mean for this subset of children is abnormally high.
+
+That is: $H_0: \mu = 6.6$ and $H_a: \mu>6.6$
+
+### Look at the data and see if there is evidence against the null hypothesis
+
+```{r, fig.align='center', out.width="80%", echo=F}
+ggplot(pwv_dat, aes(x = pwv)) +
+  theme_minimal(base_size = 15) +
+  geom_histogram(binwidth = 2, fill = "white", col = "black") +
+  geom_vline(xintercept = 6.6, lty = 2, col = "blue") +
+  geom_text(aes(x=6, y = 3.5, label = "H0"), check_overlap = T, col = "blue") +
+  geom_vline(xintercept = 12.44, lty = 2) +
+  geom_text(aes(x=11.8, y = 3.5, label = "sample\nmean"), check_overlap = T) 
+```
+
+
+
+
+### Example of a one-sided t-test (pg 426 B&M Ed 4)
+
+
+```{r, echo=TRUE}
+pwv_dat %>% 
+  summarize(sample_mean = mean(pwv),
+            sample_sd = sd(pwv),
+            sample_size = length(pwv),
+            sample_se = sample_sd/sqrt(sample_size),
+            t_test = (sample_mean - 6.6)/sample_se, 
+            p_value = 1 - pt(t_test, df = sample_size - 1))
+```
+
+### There's a function for that...
+
+Rather than doing the test using summarize, we could have R do it for us using
+`t.test`:
+
+```{r, echo=TRUE}
+t.test(x = pwv_dat %>% pull(pwv), alternative = "greater", mu = 6.6)
+```
+
+### Robustness of $t$ procedures
+
+- A confidence interval or hypothesis test is called **robust** if the confidence
+level or P-value does not change very much when the conditions for use of the 
+procedure are violated.
+
+- In particular, how robust are the procedures against non-Normality?
+
+- The $t$ procedures are quite robust against non-Normality of the population
+except when outliers or strong skewness are present.
+
+- The t procedures are not robust against outliers unless the sample size is 
+sufficiently large.
+
+### Checking assumptions
+
+- Always plot your data first:
+    - Are there any outliers
+    - Is the distribution of the data skewed?
+    
+### Guidelines for using the $t$ procedures
+
+- The SRS condition is more important that the Normality condition
+- If n < 15: Use $t$ procedures if the data appear close to Normal (at least 
+roughly symmetric, single peak, no outliers). If the data are skewed or there
+are outliers, don't use $t$.
+- Moderate sample size > 15: The $t$ procedures can be used except in the presence
+of outliers or strong skewness
+- Large sample size, roughly $n \geq 40$: The $t$ procedures can be used even 
+for strongly skewed distributions when the sample is large, roughly $n \geq 40$
+
+### Example 17.5: Can we use $t$?
+```{r, echo=FALSE, out.width="80%"}
+acorns <- c(0.3, 0.4,0.5,1,2,2.5,4,5,6,6.2,7,16.5)
+acorn_dat <- data.frame(acorns)
+ggplot(acorn_dat, aes(x = acorns)) +
+  theme_minimal(base_size = 15) +
+  geom_histogram(binwidth = 2, fill = "white", col = "black") +
+   labs(title = "Size of Acorns, N=12", y = "count", x = "Size in cm3") 
+```
+
+
+
+### Example 17.5: Can we use $t$?
+```{r, echo=FALSE, out.width="80%"}
+needl <- c(7.2,7.8,8.6,8.6,8.7,8.8,8.8,9,9.3,9.5,10.2,11,11.3,12,12.8)
+needl_dat <- data.frame(needl)
+ggplot(needl_dat, aes(x = needl)) +
+  theme_minimal(base_size = 15) +
+  geom_histogram(binwidth = 1, fill = "white", col = "black") +
+   labs(title = "Length of Needles, N=15", y = "count", x = "length in cm") 
+```
+
+
+### Example 17.5: Can we use $t$?
+```{r, echo=FALSE, out.width="80%"}
+snakes <- c(rnorm(n=490,mean=125,sd=50),210,210,210,250,300,320,350,390,400,650)
+snakes_dat <- data.frame(snakes)
+ggplot(snakes_dat, aes(x = snakes)) +
+  theme_minimal(base_size = 15) +
+  geom_histogram(binwidth = 50, fill = "white", col = "black") +
+   labs(title = "Weight of Brown treesnakes in Guam, n=500", y = "Count", x = "Weight in Grams") 
+```
+
+
+
+### Example 17.5: Can we use $t$?
+```{r, echo=FALSE, out.width="80%"}
+coccoon <- c(rnorm(n=650,mean=9,sd=1),rnorm(n=150,mean=14,sd=1))
+coc_dat <- data.frame(coccoon)
+ggplot(coc_dat, aes(x = coccoon)) +
+  theme_minimal(base_size = 15) +
+  geom_histogram(binwidth = .5, fill = "white", col = "black") +
+   labs(title = "Width of Bee Coccoons in Sweden, N=800", y = "Count", x = "width in mm") 
+```
+
+
+### Parting Humor
+```{r parting, fig.align='center', out.width="80%", echo=FALSE }
+knitr::include_graphics("teachers.png")
+```
+

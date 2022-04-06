@@ -1,0 +1,404 @@
+---
+title: "L19:  Statistical Inference with confidence intervals"
+output:
+  beamer_presentation:
+    slide_level: 3
+  ioslides_presentation: default
+  slidy_presentation: default
+header-includes:
+- \usetheme{Goettingen}
+- \renewcommand{\textbf}{\structure}
+- \renewcommand{\mathbf}{\structure}
+- \addtobeamertemplate{navigation symbols}{}{ \usebeamerfont{footline} }
+- \addtobeamertemplate{navigation symbols}{}{ \usebeamercolor[fg]{footline} }
+- \addtobeamertemplate{navigation symbols}{}{ \insertframenumber/\inserttotalframenumber
+  }
+- \usepackage[os=win]{menukeys}
+- \usepackage{soul}
+- \usepackage{xcolor}
+- \usepackage{caption}
+- \usepackage[os=win]{menukeys}
+- \usepackage{copyrightbox}
+classoption: aspectratio=169
+---
+
+<!-- libraries -->
+```{r,include=FALSE,purl=FALSE}
+library(knitr) # for include_graphics() 
+library(dplyr)
+library(ggplot2)
+```
+
+<!-- define default size for R graphics -->
+```{r,include=FALSE,purl=FALSE}
+outputFormat<-opts_knit$get('rmarkdown.pandoc.to')
+if(outputFormat=="beamer"){
+  opts_chunk$set(fig.width=6,fig.height=4)
+}
+```
+
+<!-- define function for external images -->
+```{r,include=FALSE,purl=FALSE}
+image<-function(ff,ss,cc=NULL,ll=NULL){
+  if(is.null(cc)){
+    paste('\\centering','\n',
+          '\\includegraphics[scale=',ss,']{',ff,'}',
+          sep='')
+  } else {
+    paste('\\centering','\n',
+          '\\copyrightbox[b]{',
+          '\\includegraphics[scale=',ss,']{',ff,'}',
+          '}{\\raggedleft{\\tiny \\href{',ll,'}{',cc,'}}}',
+          sep='')    
+  }
+}
+```
+
+<!-- define function for links -->
+```{r,include=FALSE,purl=FALSE}
+link<-function(tt,ll){
+  paste('[\\textcolor[HTML]{ffa328}{\\ul{',tt,'}}]','(',ll,')',sep='')
+}
+```
+
+
+### Statistics is everywhere```
+
+From The New York Times, March 6, 2020
+```{r ny2, echo=F, out.width = "45%", fig.align='center'}
+knitr::include_graphics("Nytimes_jobs2.png")
+```
+
+
+From Bloomberg news on, Feb 4, 2022
+```{r bl, echo=F, out.width = "45%", fig.align='center'}
+knitr::include_graphics("bloom.png")
+```
+We see articles like these all the time.  
+
+
+### Statistics is everywhere
+From the articles:
+
+"The economy’s remarkably steady job-creation machine sputtered in February and produced a mere 20,000 jobs. It was the smallest gain in well over a year and came on top of other signs that the economy was off to a sluggish start in 2019."
+
+and 
+ 
+ "The U.S. labor market showed unexpected strength last month despite record Covid-19 infections, extending momentum into the new year as surging wages added more pressure on the Federal Reserve to raise interest rates."
+
+But also later in the 2022 article (not mentioned in 2020): 
+
+"A broad-based 467,000 gain...followed a 709,00 total upward revision to the prior two months"
+
+Numbers are actually revised twice, once in the month following the first report, and again the month after that.
+
+### Statistics is everywhere
+What we rarely see included in the articles talking about the jobs numbers is the margin of error.  
+For the 2022 estimate, the revision was more than 1.5 times the current number !
+
+You can read more about this from the article on [fivethirtyeight](https://projects.fivethirtyeight.com/jobs-report-growth-unemployment/)
+
+
+## Statistical Inference
+
+### Theory to practice
+So far in part II we have been talking about probability and underlying probability distributions.
+
+Now we are going to think about how to use these theoretical distributions to put some boundaries around estimates we calculate from samples.
+
+### Statistical Inference
+
+Statistical Inference provides methods for drawing conclusions about a population from sample data.  We are using data from a sample to **infer** something about the underlying population.
+
+
+Today we will talk about 
+
+- Confidence intervals for point estimates
+- Margins of error
+
+
+### Simple conditions for inference about a mean
+
+1. We have a simple random sample from the population of interest. There is no
+non-response or other systematic bias (i.e., no confounding, no measurement error, no selection bias).
+2. The quantitative variable we measure has a perfectly Normal distribution $N(\mu, \sigma)$
+3. We don't know the population mean $\mu$, and want to estimate it. But we do 
+know the population standard deviation.
+
+Note that these conditions are idealized and not often realistic, however we will use this idealized version as a base which we will adapt as we move forward and discuss more realistic scenarios.
+
+### Example 14.1  Baldi and Moore 
+
+A recent NHANES reports that the mean height of a sample of 217 eight-year old
+boys was $\bar{x}=132.5$ cm. 
+
+We want to use this sample to estimate the mean $\mu$ in the population of > 1 million American eight-year-old boys.
+
+First, we need to check if the problem description meets the simple conditions
+required:
+
+Condition 1:  sampling
+
+- Is it a SRS?
+
+### Example 14.1  Baldi and Moore 
+Condition 2:  distribution in the population
+
+- Assume that the distribution of heights in the total population is Normally distributed
+
+Condition 3:  Unknown population mean but known population $\sigma$
+
+- We also need to assume a standard deviation. 
+We will assume $\sigma=10$ cm. 
+(Note that if you are asked to assume a standard deviation, it will be provided to you by the question.)
+
+### Calculating a confidence interval
+
+- Recall that $\bar{x}$ is an unbiased estimator of $\mu$. Under repeated 
+sampling, the sampling distribution of $\bar{x}$ is Normally distributed with a
+mean of $\mu$ and standard deviation $\sigma/\sqrt{n}=10/\sqrt{217}=0.7$ cm.
+
+### Calculating a confidence interval
+- We can draw the Normal distribution for the sampling distribution, and shade
+in the middle 95% of the area within 2 standard deviations of the mean. Thus, an 
+$\bar{x}$ from any random sample has a 95% chance of being within 2 SD of the 
+population mean $\mu$. This means that **for 95% of samples, 1.4 cm is the 
+maximum distance separating $\bar{x}$ and $\mu$**. Therefore, if we estimate 
+that the value $\mu$ is somewhere in the interval from $\bar{x}-1.4$ to 
+$\bar{x} + 1.4$, we'll be right 95% of the times we take a sample. 
+
+$$\bar{x}-1.4 = 132.5-1.4 = 131.1$$
+
+to 
+
+$$\bar{x}+1.4 = 132.5+1.4 = 133.9$$
+
+### Interpretation of a confidence interval
+
+- Our best estimate of $\mu$ is 132.5
+- But, given we only took one sample of size n=217, this best estimate is imprecise
+- The 95% confidence interval for $\mu$ is 131.1 to 133.9. 
+- If our model assumptions are correct and there is only random error affecting the estimate, **this method 
+for calculating confidence intervals will contain the true value $\mu$ 95% of the time** (19 times out of 20).
+- This means that the interval $\bar{x} \pm 1.4$ has a 95% success rate in 
+capturing within that interval the mean height $\mu$ of all eight-year-old 
+American boys.
+
+### Interpretation of a confidence interval
+
+**Do not use the textbook’s shorthand that “we are 95% confident that $\mu$ is contained in
+the CI”. This description is ambiguous and imprecise. **
+
+
+### What would make the CI smaller (and more precise)?
+Remember that we are building the CI based on + and - 2 X standard deviation
+
+$$standard deviation = \frac{\sigma}{\sqrt{n}}$$
+
+What would make the CI smaller?
+
+### What would make the CI smaller (and more precise)?
+
+$$standard deviation = \frac{\sigma}{\sqrt{n}}$$
+
+- If we increase the sample size, the confidence interval is more precise
+- If there were less underlying variability in the data (i.e., $\sigma$ was smaller), than the CI would be more precise
+
+### Margin of error and confidence level
+
+Form of a confidence interval:
+
+$$estimate \pm \text{margin of error}$$
+
+The margin of error will differ based on the confidence level (often 90%, 95%, or 99%)
+that is chosen. 
+
+Will a 99% confidence interval be wider or narrower than a 95% confidence 
+interval?
+
+### The standard Normal distribution
+Recall the Standard Normal
+
+- The standard Normal distribution N(0,1) has $\mu = 0$ and $\sigma=1$.
+- $X \sim N(0,1)$, implies that the random variable X is Normally distributed.
+
+```{r, echo=F, out.width="75%"}
+library(ggplot2)
+p1 <- ggplot(data = data.frame(x = c(-3, 3)), aes(x)) +
+  stat_function(fun = dnorm, n = 101, args = list(mean = 0, sd = 1), col = "orange") +
+  labs(y = "density", x = "") + 
+  geom_text(aes(x = 0, y = 0.45), label = "mean = 0 \nsd = 1", check_overlap = T, col = "orange") +
+  theme_minimal(base_size = 15) +
+  geom_segment(aes(x = 0 , y = 0, xend = 0, yend = 0.4)) +
+  geom_segment(aes(x = 1 , y = 0, xend = 1, yend = 0.25), lty = 2) +
+  geom_segment(aes(x = -1 , y = 0, xend = -1, yend = 0.25), lty = 2) +
+  geom_segment(aes(x = 2 , y = 0, xend = 2, yend = 0.05), lty = 3) +
+  geom_segment(aes(x = -2 , y = 0, xend = -2, yend = 0.05), lty = 3) +
+  scale_x_continuous(breaks = -3:3, 
+                     labels = c(-3, "-2\n-2 SD", "-1\n-1 SD", "0\nmean", "1\n+1 SD", "2\n+2 SD", 3))
+p1
+```
+
+### Standardizing Normally distributed data
+
+- Any random variable that follows a Normal distribution can be standardized
+- If $x$ is an observation from a distribution that has a mean $\mu$ and a 
+standard deviation $\sigma$, 
+
+$$z = \frac{x-\mu}{\sigma}$$
+   
+### What's the Z 
+
+By converting our variable of interest $X$ to $Z$ we can use the probabilities of the standard normal probability distribution to estimate the probabilities associated with $X$.
+
+- A standardized value is often called a **z-score**
+- Interpretation: $z$ is the number of standard deviations that $x$ is above or
+below the mean of the data.
+
+## Confidence intervals for the mean $\mu$
+
+### Confidence intervals for the mean $\mu$
+
+| Confidence level C | 90%   | 95%                 | 99%   |
+|--------------------|-------|---------------------|-------|
+| Critical value z*  | 1.645 | 1.960 ($\approx 2$) | 2.576 |
+
+- These numbers correspond to the value on the x-axis corresponding to having 90%,
+95%, or 99% of the area under the Normal density between -z and z.
+
+The generic format of a confidence interval is then:
+$$\bar{x} \pm z* \frac{\sigma}{\sqrt{n}}$$
+
+
+
+### Confidence intervals for the mean $\mu$
+- For example, the middle 90% of the area under the Normal density lies between 
+-1.645 and 1.645. 
+
+- Thus, a 90% confidence interval is of the form:
+
+$$\bar{x} \pm 1.645\frac{\sigma}{\sqrt{n}}$$
+
+### Confidence interval for the mean of a Normal population
+
+Draw a SRS of size $n$ from a Normal population having unknown mean $\mu$ and
+known standard deviation $\sigma$. A level C confidence interval for $\mu$ is:
+
+$$\bar{x} \pm z^*\frac{\sigma}{\sqrt{n}}$$
+
+$$\text{unbiased estimate} \pm \text{(critical value)}\times{\text{(sd of the distribution of the estimate)}}$$
+
+$$\text{unbiased estimate} \pm \text{(critical value)}\times{\text{(standard error)}}$$
+
+### Steps in finding confidence intervals
+
+1. Problem: Statement of the problem in terms of the parameter you would like 
+to estimate
+
+2. Plan: How will you estimate this parameter? What type of data will you collect?
+
+3. Data: After you plan the study, collect the data you need to answer the problem.
+
+4. Analysis: Evaluate whether the assumptions required to compute a confidence 
+interval are satisfied. Calculate the estimate of the mean and its confidence 
+interval. 
+
+5. Conclusion: Return to the practical question to describe your results in this
+setting.
+
+### Example on IQ scores (pg. 354)
+
+We are interested in the mean IQ scores of 7th grade girls in a Midwest school 
+district. Here are the scores for 31 randomly selected seventh-grade girls. We
+also know that the standard deviation of IQ scores is 15 points:
+
+```{r the-sample-data}
+scores <- c(114, 100, 104, 89, 102, 91, 114, 114, 103, 105, 
+            108, 130, 120, 132, 111, 128, 118, 119, 86, 72,
+            111, 103, 74, 112, 107, 103, 98, 96, 112, 112, 93)
+
+iq_data <- data.frame(scores)
+
+known_sigma <- 15
+```
+
+Estimate the mean IQ score $\mu$ for all seventh grade girls in this Midwest 
+school district by giving a 95% confidence interval.
+
+### Example on IQ scores (pg. 354)
+
+First check the three assumptions:
+
+1. Normality: Can evaluate this using a histogram
+2. SRS: Can only use information provided in the problem to assess with an SRS
+was taken. 
+3. Known $\sigma$: Can use information provided in the problem to determine if
+$\sigma$ is known.
+
+### Checking Normality
+
+```{r, warning=F, message=F, echo=F, out.width="65%", fig.align='center'}
+library(tidyverse)
+ggplot(iq_data, aes(x = scores)) + 
+  geom_histogram(binwidth = 5, col = "white") +
+  theme_minimal(base_size = 15)
+```
+
+We can't examine the Normality of the population (because we don't have data on 
+everyone) but we can make a plot for the sample. These data appear slightly left-
+skewed, but since there is not much data, it may actually follow a Normal distribution.
+
+
+### Calculating the estimated mean and its confidence interval
+
+Option 1: Perform calculations by hand
+
+```{r, echo=F, fig.align='center', out.width="80%"}
+knitr::include_graphics("calcs.JPG")
+```
+
+### Calculating the estimated mean and its confidence interval
+
+Option 2: Perform calculations using R
+
+```{r calc-confidence-interval}
+sample_mean <- mean(scores)
+
+standard_error <- known_sigma/sqrt(length(scores))
+critical_value <- 1.96
+
+lower_bound <- sample_mean - critical_value*standard_error
+upper_bound <- sample_mean + critical_value*standard_error
+```
+
+### Calculating the estimated mean and its confidence interval
+```{r con_int2}
+sample_mean
+standard_error
+lower_bound
+upper_bound
+```
+
+
+### Calculating the estimated mean and its confidence interval
+Thus, our best estimate of the population mean is 105.84. 
+
+Its 95% confidence interval is 100.56 to 111.12. 
+
+If our model assumptions are correct and there is only random error affecting the estimate, this method for calculating confidence intervals will contain the true value $\mu$ 95% of the time (19 times out of 20).
+
+### Recap
+
+* We learned how to create a confidence interval for the mean when the standard deviation for the population is known.
+* We learned about the three required assumptions and how to check the Normality assumption using a histogram.
+* We learned how to interpret the confidence interval and the definitions for the confidence level and the margin of error
+* We introduced our "recipe" for a margin of error
+
+$$\text{unbiased estimate} \pm \text{(critical value)}\times{\text{(standard error)}}$$
+
+
+
+### Central limit theorem
+```{r clt, echo=F, out.width = "80%", fig.align='center'}
+knitr::include_graphics("xkcd_errorbars.png")
+```

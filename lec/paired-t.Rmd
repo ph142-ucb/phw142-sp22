@@ -1,0 +1,507 @@
+---
+title: "More flavors of T: paired tests"
+output:
+  beamer_presentation:
+    slide_level: 3
+  ioslides_presentation: default
+  slidy_presentation: default
+header-includes:
+- \usetheme{Goettingen}
+- \renewcommand{\textbf}{\structure}
+- \renewcommand{\mathbf}{\structure}
+- \addtobeamertemplate{navigation symbols}{}{ \usebeamerfont{footline} }
+- \addtobeamertemplate{navigation symbols}{}{ \usebeamercolor[fg]{footline} }
+- \addtobeamertemplate{navigation symbols}{}{ \insertframenumber/\inserttotalframenumber
+  }
+- \usepackage[os=win]{menukeys}
+- \usepackage{soul}
+- \usepackage{xcolor}
+- \usepackage{caption}
+- \usepackage[os=win]{menukeys}
+- \usepackage{copyrightbox}
+classoption: aspectratio=169
+---
+
+<!-- libraries -->
+```{r,include=FALSE,purl=FALSE}
+library(knitr) # for include_graphics() 
+library(dplyr)
+library(ggplot2)
+```
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+### Flavors of T  
+Last lecture we introduced the T test for two **independent** samples
+
+In this lecture we will extend our t-testing framework to consider what happens when those samples are NOT independent.
+
+
+### Example:  Weight by gender
+Imagine for example that we want to show that weight is different among males and females in the United States. Imagine we have data from 100 randomly sampled males and 100 randomly sampled females in the United States. 
+
+We would test the null hypothesis that there is no difference between the mean weight of men and women in the united states
+
+$$\bar X_{(group_{a})} = \bar X_{(group_{b})}$$
+
+### Example:  Weight by gender
+Would we consider these samples independent?
+
+
+## standard two-sample t-test
+
+### Two sample t-test
+We want to compare the mean weight for each group, and use the standard error of the weights of these groups to calculate a t-test.  This helps us to understand if the difference in the means is larger than we might see due to the variability of the weights in our observations.  
+
+we would calculate 
+
+$$t=\frac{x_{groupa}-x_{groupb}}{\sqrt{\frac{S^2_{groupa}+S^2_{groupb}}{n}}}$$
+
+
+and compare this to a t-distribution at our chosen critical point with appropriate degrees of freedom
+
+### Two sample t-test 
+To illustrate this example, I have simulated data for males and females using the mean and standard deviation of weights in the United States taken from the CDC NHANES data
+
+```{r indwt, echo=FALSE}
+# Read CSV into R
+weights <- read.csv(file="weights.csv", header=TRUE, sep=",")
+```
+```{r, echo=TRUE}
+weights %>% group_by(sex) %>% summarise(sample_mean = mean(weight1), 
+                                                sample_sd = sd(weight1), 
+                                                length = length(weight1))
+```
+
+### Two sample t-test
+I can overlay the histograms for these data with this code:
+
+ggplot(weights,aes(x=weight1)) + 
+
+    geom_histogram(data=subset(weights,sex == 'M'),binwidth=5,fill="dark green", col="green") +
+
+    geom_histogram(data=subset(weights,sex == 'F'),binwidth=5,fill = "blue", col="black") +
+
+  theme_minimal(base_size = 15)
+
+Notice that I am using two geom_histogram statements to lay the histograms on top of one another rather than using a "fill" statement in one geom_histogram.  
+
+### Two sample t-test  
+```{r ingraph,echo=FALSE, out.width="80%"}
+ggplot(weights,aes(x=weight1)) + 
+    geom_histogram(data=subset(weights,sex == 'M'),binwidth=5,fill="dark green", col="green") +
+    geom_histogram(data=subset(weights,sex == 'F'),binwidth=5,fill = "blue", col="black") +
+  theme_minimal(base_size = 15)
+```
+
+### Two sample t-test 
+And a Student's T test will show that this difference is statistically significant - notice the syntax here
+```{r indwt2, echo=TRUE}
+t.test(weights$weight1~weights$sex, alternative="two.sided")
+```
+
+### Independent vs non-independent samples
+In this example we have measured randomly selected males and females and we have no reason to believe their measurements are correlated. So a two-sample simple t-test is a reasonable approach.
+
+What happens if we imagine that these 200 individuals are all invited to participate in a weight loss trial. 
+
+We have their baseline weight, and after 6 months of participation in the trial they are weighted again.
+
+What would we assume about the independence of our measures now?
+
+### Independent vs. non-independent samples
+Using r to graph the pre and post-trial weights we can see that these are correlated
+
+```{r wtscatter, echo=FALSE}
+plot(weights$weight1,weights$weight2)
+```
+
+### Independent vs. non-independent samples
+For each individual in this study, we will will compare their weight after 6 months in the trial to their weight at baseline. Now we have broken our assumption (needed for the Student's t-test) that the measurements in the two groups (pre and post) are independent of each other. 
+
+We would expect that each person's weight at 6 month follow up will be closely related to their own weight at baseline. We would also expect that the variation in weight within one person will be much less than the variation in weight between people. 
+
+In this case, because I have simulated the data, I know that this hypothetical weight loss program results in an average weight loss of 5 pounds with a standard deviation of 5 pounds. 
+
+
+### Independent vs. non-independent samples
+Let's take a look at what happens when we use this Student's T test to compare weights before and after the intervention without taking into account the relationship of these measurements:
+
+If we do not take into account the paired structure of the data, we are testing the null hypothesis
+$$\bar X_{(weight pre trial)} = \bar X_{(weight post trial)}$$
+and our t-test would be based on
+
+$$t=\frac{\overline{X_{(weight pre trial)}}-\overline{X_{(weight post trial)}}
+}{\sqrt{\left(\frac{S^2_{1}}{n_{1}}+\frac{S^2_{2}}{n_{2}}\right)}}$$
+
+### Independent vs. non-independent samples
+```{r indwt3, echo=TRUE}
+t.test(weights$weight1, weights$weight3, data=weights)
+```
+
+### Independent vs. non-independent samples
+We see that the estimated difference in weight is close to 5 pounds, but the results are not statistically significant. If we do not account for the relatedness of these measurements there is too much "noise" or variation between the measurements to see the "signal" or the true difference in means.
+
+The solution to this problem is to look at the measurements in pairs and base our statistical testing on the variability in the difference between the pre and post intervention measures of weight. 
+
+# Paired t-test 
+
+### Paired t-test
+In this case we are now testing the null hypothesis that the difference is 0
+
+This is called a paired t-test.
+$$t=\frac{\bar d_{(weightpost-weightpre)}} {\frac{S_d} {\sqrt{n}}}$$
+
+### Paired t-test
+```{r, echo=TRUE}
+weights %>% summarise(dif_mean = mean(dif2), dif_sd = sd(dif2),
+                      wt1_mean=mean(weight1),wt1_sd=sd(weight1),
+                      wt3_mean=mean(weight3),wt3_sd=sd(weight3))
+```
+
+### Paired t-test
+Notice the syntax here:
+```{r indwt4, echo=TRUE}
+t.test(weights$weight1, weights$weight3,data=weights, paired=TRUE)
+```
+
+### Paired test results
+Here we see that the estimate of difference is unchanged, but the t-test is now using the standard deviation of the difference (4.85) rather than the standard deviation of weights between people at each time point(30.77 and 31.6) to determine whether this difference is statistically significant. 
+
+With the paired test, our value of t is much higher and our results are statistically significant.
+
+### Distribution of differences
+If we graph the mean values and distribution of the difference between pre and post trial weight, and the overall weights post trial we can see that the variability is much smaller for the difference.
+
+ggplot() +
+
+geom_histogram(data = weights, aes(x = weight3), binwidth=5, fill="green") +
+
+geom_histogram(data = weights, aes(x = dif2), binwidth=5, fill="blue") +
+
+ labs( x = "Weight in kg") +
+
+  theme_minimal(base_size = 15)
+
+### Distribution of differences
+
+```{r ingraph2,echo=FALSE, out.width="80%"}
+ggplot() +
+geom_histogram(data = weights, aes(x = weight3), binwidth=5, fill="green") +
+geom_histogram(data = weights, aes(x = dif2), binwidth=5, fill="blue") +
+ labs( x = "Weight in kg") +
+  theme_minimal(base_size = 15)
+```
+
+## t-test: More juice per squeeze?
+
+
+### t-test: More juice per squeeze?
+When we have 
+
+- The standard error was much lower using the paired test. Why?
+- Only variation within a subject was used to calculate the SE of the mean difference
+- there was much less variation within a subject than between subjects
+
+
+### The Statistical Method {.emphasized}
+
+**P**roblem<br>
+
+**Plan**
+
+**D**ata<br>
+
+**A**nalysis<br>
+
+**C**onclusion
+
+### Plan, a.k.a. experimental design
+
+- Once the **problem** has been stated, the next step is to determine a **plan** to best answer the question.
+One of the tenets of design is to maximize <b class = "greentext">**efficiency**</b>. 
+- When data are paired a paired test greatly maximizes the efficiency by removing the noise introduced by between-subject variability.
+
+### When is a paired design the appropriate design?
+
+ - Studies with multiple measures on the same units of observation
+ - Studies with inherently related observations 
+ - Studies that match units of observation to reduce variability
+
+
+### Studies with mutliple measures on the same units
+Cross -over or before and after studies - in our weigh-loss example we were looking at measures before and after participation...
+
+- When "the treatment alleviates a condition rather than affects a cure." (Hills and Armitrage, 1979)
+- The effect of treatment is short-term. After $x$ amount of time, participants return to baseline.
+- The $x$ above refers to the <b class = "greentext">**wash-out**</b> period. Before applying the second treatment, participants should have enough time to reach their baseline level. Otherwise there may be a <b class = "greentext">**carry over**</b> effect.
+
+### Studies with mutliple measures on the same units
+Considerations for before/after or cross-over studies
+- The time between the alternative treatments isn't so long as to introduce confounding by other factors.
+- For example, if you waited a year between applying treatments, other things may have changed in the world
+or in a person's life that affects the outcome.
+- Thus, there is a balance between waiting too long or not waiting long enough.
+
+If we wanted to look at changes in individual related to a treatment what other type of design might we consider?
+
+### Inherently related observations
+ - Matched body parts 
+ - Studies in identical twins
+ - Studies of diet or health behaviors in couples or family members 
+ 
+### Studies that match to reduce variability
+- Matched communities
+
+## Example small study of diet
+
+
+### Cholestorol measurements following two alternative diets - 
+
+Suppose you received the following graphic illustrating cholesterol measurements following two alternate diets. What do you think about these data? 
+
+```{r make-dataset, echo=F, message=F, warning=F, out.width="80%"}
+# Eleven study participants were randomized to each diet, and you're tasked with 
+# figuring out whether there is a difference between the diet's average cholesterol levels.
+
+library(tidyverse)
+library(RColorBrewer)
+
+set.seed(123)
+trt_a <- c(155, 180, 190, 192, 203, 201, 207, 208, 217, 228, 237)
+
+# Model parameters: You can play around with these to see how they affect your analysis.
+signal <- 7 # note: this is the true underlying mean difference we will estimate
+noise <- 4  # note: 4/sqrt(n) is the true SE of the mean = 1.21, where n = length(trt_a) = 11
+
+trt_b <- trt_a + rnorm(length(trt_a), signal, noise)
+
+chol_dat <- data.frame("A" = trt_a, "B" = trt_b, "id" = 1:length(trt_a))
+
+chol_dat_long <- chol_dat %>% gather(A, B, key = "diet", value = "cholesterol")
+```
+
+```{r, out.width="60%", echo=F, fig.align='center'}
+ggplot(chol_dat_long, aes(diet, cholesterol)) + 
+  geom_jitter(width = 0.03, pch = 21, size = 5, fill = "#2ca25f", alpha = 0.8) + 
+  labs(y = "Cholesterol", x = "Diet") +
+  theme_minimal(base_size = 15)
+```
+
+### Cholestorol measurements following two alternative diets - 
+
+```{r, out.width="60%", echo=F, fig.align='center'}
+means <- chol_dat_long %>% 
+  group_by(diet) %>% 
+  summarise(mean = round(mean(cholesterol), 1),
+            median = round(median(cholesterol), 1))
+
+ggplot(chol_dat_long, aes(diet, cholesterol)) + 
+  geom_boxplot(fill = "transparent") +
+  geom_jitter(width = 0.03, pch = 21, size = 5, fill = "#2ca25f", alpha = 0.8) + 
+  labs(y = "Cholesterol", x = "Diet") +
+  geom_text(data = means, aes(x = diet, y = 260, label = paste0("Mean: ", mean)), size = 5) +
+  theme_minimal(base_size = 15)
+```
+
+- What do you notice about the variability between participants under each diet?
+- What is the mean difference? 
+
+```{r, echo=F, eval=F}
+#There is a lot of between subject variability. This variation has nothing to do with the treatments.
+#The mean difference is 7.8 units.
+```
+
+### Cholestorol measurements following two alternative diets - 
+
+An independent t-test reveals no evidence against the null hypothesis of no difference between the diets:
+
+```{r, out.width="80%", echo=F, fig.align='center'}
+indep_t <- t.test(x = chol_dat %>% pull(A), 
+                       y = chol_dat %>% pull(B), mu = 0, 
+                       alt = "two.sided", paired = F, 
+                       conf.level = 0.95)
+
+indep_t
+```
+
+### Better visualization for a very small study
+
+Now, what do you notice about the paired data?
+
+```{r, out.width="80%", echo=F, fig.align='center'}
+chol_dat_long <- chol_dat_long %>% mutate(diet_n = ifelse(diet == "A", 1, 2))
+means <- means %>% mutate(diet_n = ifelse(diet == "A", 1, 2))
+
+ggplot(chol_dat_long, aes(diet_n, cholesterol)) + 
+  geom_line(aes(group = id), lty = 3, lwd = 1) +
+  geom_point(aes(fill = as.factor(id)), pch = 21, size = 5, alpha = 0.8) + 
+  scale_fill_brewer(palette = "Spectral") +
+  labs(y = "Cholesterol", x = "Diet") +
+  geom_text(data = means, aes(x = diet_n, y = 260, label = paste0("Mean: ", mean)), size = 5) +
+  theme_minimal() +
+  guides(fill = guide_legend("ID")) +
+  scale_x_continuous(breaks = c(1, 2), labels = c("A", "B"), limits = c(0.5, 2.5)) +
+  theme_minimal(base_size = 15)
+  theme(panel.grid.minor.x = element_blank())
+```
+
+```{r, echo=F, eval=F}
+# There is a consistent increase in cholesterol under Diet B. 
+# We also know that the mean of the individual differences is equal to the difference
+# of the means --> the average of the individual differences is also 209.4-201.6 = 7.8
+# So what is different about the test? It's the standard error. 
+```
+
+### apply a paired t-test
+
+
+- The observed value of the test statistic is: 
+$t = \frac{\bar{x}_d-0}{s_d/\sqrt{n}}$
+
+- It can be compared to a critical value from the t distribution with $n-1$ degrees of freedom
+
+### Calculate the test statistic, p-value, and 95% confidence interval {.demphasize}
+
+- First let's have a look at the dataset as is:
+
+```{r peak-data} 
+head(chol_dat)
+```
+
+### Calculate the test statistic, p-value, and 95% confidence interval {.demphasize}
+
+- We can use functions from the library `dplyr` to calculate the test statistic
+- Use `mutate` to calculate each participant's difference:
+
+```{r mutate-diff, echo=TRUE}
+chol_dat <- chol_dat %>%mutate(diff = B - A)
+head(chol_dat)
+```
+
+### Calculate the test statistic, p-value, and 95% confidence interval
+
+- Then use `summarize` to calculate the mean difference ($\hat{\mu}_d$), its
+standard error ($\hat{s}_d/\sqrt{n}$), and the observed t-statistic:
+
+```{r calc-t-stat, echo=TRUE}
+summary_stats <- chol_dat %>% 
+  summarize(mean_diff = mean(diff),  # mean difference
+            std_err_diff = sd(diff)/sqrt(n()),  # SE of the mean 
+            t_stat = mean_diff/std_err_diff)   # test statistic
+summary_stats
+```
+
+### Calculate the test statistic, p-value, and 95% confidence interval {.tiny}
+
+What is the <b class = "greentext">probability</b> of observing a t-stat $\geq$ `r round(summary_stats$t_stat, 2)` or $\leq$ `r round(-summary_stats$t_stat, 2)` using the `pt` command.
+
+```{r graph-t, out.width="80%", echo=F, fig.align='center'}
+##You do not need to know how to do this
+ggplot(data.frame(x = rt(100000, 10)), aes(x = x)) + 
+  stat_function(fun = dt, args = list(df = 10)) + 
+  scale_x_continuous(limits = c(-9, 9), 
+                     breaks = c(-8, -4, 0, 4, 8), 
+                     labels = c(-8, -4, 0, 4, 8))  +
+  geom_vline(xintercept = c(-summary_stats$t_stat, summary_stats$t_stat), lty = 3) +
+  geom_area(stat = "function", fun = dt, args = list(df = 10), fill = "blue", xlim = c(-5, -summary_stats$t_stat)) +
+  geom_area(stat = "function", fun = dt, args = list(df = 10), fill = "blue", xlim = c(summary_stats$t_stat, 5)) + 
+  labs(x = "t distribution") + 
+  theme(panel.grid.minor = element_blank()) 
+```
+
+```{r calc-pval}
+pt(q = summary_stats %>% pull(t_stat), lower.tail = F, df = 10) * 2
+```
+
+### Calculate the test statistic, p-value, and 95% confidence interval {.demphasized}
+
+- To calculate the 95% confidence interval, we need to know the quantile of the 
+t distribution such that 2.5% of the data lies above or below it.
+
+- Ask R: What is the <b class = "greentext">quantile</b> such that 97.5% of the t-distribution is below it on 10 degrees of freedom using the `qt` command.
+
+### Calculate the test statistic, p-value, and 95% confidence interval {.demphasized}
+```{r calc-CI, echo=TRUE}
+q <- qt(p = 0.975, lower.tail = T, df = 10)
+q
+ucl <- summary_stats %>% pull(mean_diff) + (q * summary_stats %>% pull(std_err_diff))   
+lcl <- summary_stats %>% pull(mean_diff) - (q * summary_stats %>% pull(std_err_diff))  
+c(lcl, ucl)
+```
+
+The confidence interval is (`r lcl`, `r ucl`).
+
+### Calculate the test statistic, p-value, and 95% confidence interval {.demphasized}
+
+- Or, have R do the work for you! Just be sure to specify that `paired = T`.
+```{r lazy-way}
+paired_t <- t.test(chol_dat %>% pull(B), chol_dat %>% pull(A), 
+                   alternative = "two.sided", mu = 0, paired = T)
+```
+
+### Calculate the test statistic, p-value, and 95% confidence interval {.demphasized}
+```{r lazy2}
+paired_t
+```
+
+### Compare the outputs from the independent and paired tests
+
+|                   | Independent      |Paired                   | 
+|-------------------|------------------|-------------------------|
+|  T statistic      |         -0.78557 |               6.6033    |
+| df                |         19.976   |           10            |
+|pvalue             |         0.4413   |           6.053e-05     |
+|mean               | 201.67 vs  209.35|       7.72              |
+|95% CI             | -28.21 to 12.78  |  5.11 to 10.32          |
+|SE                 | 9.823            |  1.169                  |
+
+- What is the same?
+- What is different?
+
+## Examples - which flavor of T?
+
+
+### Which flavor of T?
+
+1) You want to see if there is a difference in blood pressure among men and women.  You randomly sample 10 households from each census tract in a city and measure blood pressure of a man and woman living in each household.
+
+2) You are interested in the efficacy of a medication for rheumatoid arthritis.  You measure severity of symptoms among individuals randomized to treatment or control.
+
+3)  You are interested in family size and hyperactivity. You measure hyperactive behavior among only children vs children with siblings.
+
+
+### Which flavor of T?
+
+4)  You are testing a new medication for glaucoma.  You randomize individuals with glaucoma in both eyes to put active medication in their right or left eye.
+
+5)  You are interested in educational attainment in charter schools.  You measure scores on a standardized test among students and a charter school and compare the scores to the state average for public schools.
+
+
+### coding notes
+
+A one sample t- test will take the form:
+
+t.test(x = **x variable**, alternative = **greater, less or two.sided**, mu = **null hypothesis value**)
+
+A two sample t-test will take the form:
+
+t.test(**first sample data**, **second sample data**, alternative = **greater, less or two.sided**)
+
+A paired t-test will take the form:
+
+t.test(**first data points**, **second datapoints**, alternative = **greater, less or two.sided**, paired=TRUE)
+
+
+### parting PSA
+```{r, out.width="50%", fig.align='center', echo=FALSE}
+knitr::include_graphics("steepen.png")
+```
+
+As of April 15th everyone 16 and older in California is eligible to be vaccinated:
+
+https://myturn.ca.gov/
+
+

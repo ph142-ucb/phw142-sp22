@@ -1,0 +1,875 @@
+---
+title: "Power: Inference in Practice"
+output:
+  beamer_presentation:
+    slide_level: 3
+header-includes:
+- \usetheme{Goettingen}
+- \renewcommand{\textbf}{\structure}
+- \renewcommand{\mathbf}{\structure}
+- \addtobeamertemplate{navigation symbols}{}{ \usebeamerfont{footline} }
+- \addtobeamertemplate{navigation symbols}{}{ \usebeamercolor[fg]{footline} }
+- \addtobeamertemplate{navigation symbols}{}{ \insertframenumber/\inserttotalframenumber
+  }
+- \usepackage[os=win]{menukeys}
+- \usepackage{soul}
+- \usepackage{xcolor}
+- \usepackage{caption}
+- \usepackage[os=win]{menukeys}
+- \usepackage{copyrightbox}
+classoption: aspectratio=169
+---
+
+
+<!-- libraries -->
+```{r,include=FALSE,purl=FALSE}
+library(knitr) # for include_graphics() 
+library(dplyr)
+```
+
+
+### Recall the simple conditions for inference
+
+1. Simple Random Sample (SRS)
+2. Population has a Normal distribution
+3. $\sigma$ is known
+
+### Condition 1: Where do the data come from?
+
+When you use statistical inference, you are acting as if your data are a 
+probability sample or come from a randomized experiment.
+
+Sometimes we treat non-random samples as if they were random. We can do this if 
+we believe that the non-randomness of the sample does not affect the outcome of 
+interest
+
+### Condition 1: Where do the data come from?
+
+A neurobiologist is interested in how visual perception can be fooled
+by optical illusions. 
+
+A sociologists is interested in attitudes toward the use of human subjects in experiments
+
+They both use their students as a convenience sample. Can we act as if these 
+students are a SRS? It is easier to make this argument for one of these research
+questions. 
+
+
+Which one? And why?
+
+### Condition 1: Where do the data come from?
+
+Even if the data come from a randomized experiment, there could be issues that
+hinder the randomness - we covered some of these when we talked about study design:
+
+- Non response
+- Dropout ("Lost to follow-up", in RCT jargon)
+- Social desirability
+
+What were some of the biases mentioned in the article about political polling?
+
+
+### Condition 2: What is the shape of the population distribution?
+
+- We have leeway around this condition. This is because the z-test (and others 
+we'll learn) rely on the Normality of the sample mean which is guaranteed by the 
+Central Limit Theorem when $n$ is "large enough"
+- The z-test is reasonably accurate for any symmetric distribution if the sample
+size is moderate
+- If the distribution is skewed, need a large enough $n$ for the z-test to work.
+
+### Condition 2: What is the shape of the population distribution?
+
+- Examine the shape of the sample's distribution using a QQ plot (ideally) or a 
+histogram. Use it to infer the shape of the population
+- Difficult to infer much if there are too few observations.
+
+### Condition 2: What is the shape of the population distribution?
+
+- Outliers can affect tests of non-resistant measures, like the mean. 
+- Double check if the outlier is "real" or an error. If it is real, we might use other methods that aren't sensitive to outliers.
+
+(we may explore some non-parametric tests in part III if we have time)
+
+## Recap - confidence intervals and testing 
+
+### How confidence intervals behave
+
+Recall the form of a CI: 
+
+$$\bar{x} \pm z^*\frac{\sigma}{\sqrt{n}}$$
+
+Where $z^*\frac{\sigma}{\sqrt{n}}$ is the **margin of error**.
+
+### How confidence intervals behave
+
+The margin of error gets smaller when: 
+
+- z* is smaller (i.e., you change to a smaller confidence level). Thus, there is 
+a trade-off between the confidence level and the margin of error.
+- $\sigma$ is smaller. You might be able to reduce $\sigma$ if there is measurement
+error. Often times, the $\sigma$ can't be reduced, it is just a characteristic
+of the population
+- $n$ is larger. 
+
+### The margin of error only accounts for sampling error
+
+- This is one of the most important points!
+- If you're taking epidemiology, you've likely learned about other main errors:
+confounding, measurement error, and selection bias. These are **systematic errors**.
+The confidence interval does not account for systematic errors.
+
+### How hypothesis tests behave
+
+- The p-value of a test is dependent on whether $H_a$ is one-sided or two-sided.
+- The p-value for a one sided test is one-half the p-value for the two-sided test
+of the same $H_0$
+- The sample data is used as evidence. It should never be the basis for determining
+the direction of the alternative hypothesis.
+
+### How hypothesis tests behave
+
+- Statistical significance depends on sample size (since sample size determines
+the standard error of the sampling mean)
+
+- Recall the form of the z-test:
+
+$$z = \frac{\bar{x}-\mu}{\sigma/\sqrt{n}}=\frac{\text{magnitude of observed effect}}{\text{size of chance variation}}=\frac{signal}{noise}$$
+
+- The numerator quantifies the distance between what you observe in the sample 
+and the null hypothesized parameter.
+- The denominator represents the size of chance variations from sample to sample
+
+
+### How hypothesis tests behave
+
+- Statistical significance depends on:
+    - The size of the observed effect ($\bar{x}-\mu$)
+    - The variability of individuals in the population ($\sigma$)
+    - The sample size ($n$)
+    - Your criteria for rejection the null ($\alpha$)
+    
+If you obtain a small p-value it is not necessarily because the effect size is large.
+
+
+### How hypothesis tests behave
+
+Very tiny effects can be deemed statistically significant when you have enough
+data. This is a big problem in the age of big data, because you're almost 
+guaranteed to obtain statistically significant results, no matter the effect size.
+
+On the other hand, if your sample size is too small, you might not obtain statistical
+significance even if your effect size is large. Thus "an absence of evidence is 
+not evidence of absence", or failing to reject the null hypothesis does not imply
+that the null hypothesis is true.
+
+
+## $\alpha$ $\beta$ and types of error
+
+### $\alpha$
+- The significance level also called the p-value or $\alpha$ is the probability that we observe the estimate we observe or something more extreme when the null hypothesis is true
+
+- This equates to the probability of of making a wrong decision and rejecting the null hypothesis when the null hypothesis is true. 
+
+- This is also called the **type I error**
+
+- But there is another type of error
+
+###  Type I error, and Type II error in hypothesis tests
+- $\beta$  is the chance of making a wrong decision when the alternative hypothesis is true. 
+
+- This is known as a **type II error.**
+
+
+### Type I error, and Type II error in hypothesis tests
+
+|                      | $H_a$ is true                 |  $H_0$ is true                  |
+|----------------------|-------------------------------|---------------------------------|
+| Reject $H_0$         | Correct decision              | Type I error ($\alpha$)         |
+| Fail to reject $H_0$ | Type II error ($\beta$)       | Correct decision                |
+
+
+This table should remind you of something we have seen before....
+
+
+### Screening tests
+
+|                   | Have the disease | Do not have the disease |
+|-------------------|------------------|-------------------------|
+| **Test positive** | True positive    | False positive          |
+| **Test negative** | False negative   | True negative           |
+
+In the case of screening tests, we calculated sensitivity as the P(Test positive | Have the disease)
+
+in the case of hypothesis testing we are often interested in **power**
+
+### Power 
+- The power is the chance of making the correct decision when the alternative hypothesis is true.
+- Thus, it is the complement of $\beta$
+- $\text{Power}=1-\beta$
+
+|                      | $H_a$ is true                 |  $H_0$ is true                  |
+|----------------------|-------------------------------|---------------------------------|
+| Reject $H_0$         | Correct decision              | Type I error ($\alpha$)  |
+| Fail to reject $H_0$ | Type II error ($\beta$)      | Correct decision                |
+
+
+### Beta and Power
+
+Type II error or $\beta$ is a conditional probability 
+
+$\beta$ = P(fail to reject $H_{0}|H_{0}$ is false)
+
+$\text{Power}=1-\beta$ = P(reject $H_{0}|H_{0}$ is false) 
+
+
+However, there are an infinite number of possible values that $\mu$ could assume that are not = $\mu_{0}$
+
+Thus we must choose a value at which to evaluate the $\beta$ and power for an alternative hypothesis...
+
+When we evaluate $\beta$ we do so at a single such value $\mu_{1}$
+
+## Calculating power in R
+
+### Example of calculating power
+
+Suppose you have a known standard deviation $\sigma = 1$. $H_0: \mu = 0$ vs. 
+$H_a: \mu > 0.8$ and choose $\alpha = 0.05$. Calculate the power when $n=10$.
+
+You can calculate the minimum z-value required to reject $H_0$:
+
+```{r}
+qnorm(p = 0.05, mean = 0, sd = 1/sqrt(10), lower.tail = F)
+```
+
+So for any z-test with this value or higher, you will reject $H_0$ in favor of $H_a$.
+
+This is often called $Z_{\alpha}$
+
+### Example of calculating power
+
+Now suppose that $H_a$ is true. The test will reject $H_0$ about what percent of the 
+time when $H_a$ is true? To calculate this probability, we take the value from the 
+previous calculation and calculate the *probability* above its value under $H_a$:
+
+```{r}
+pnorm(q = 0.5201484, mean = 0.8, 1/sqrt(10), lower.tail = F)
+```
+
+### Example of calculating power, illustrated
+
+```{r, echo= F, fig.align='center', out.width="80%"}
+library(ggplot2)
+ggplot(data = data.frame(x = c(-1.3, 2)), aes(x)) + 
+    geom_area(stat = "function", fun = dnorm, args = list(mean = 0, sd = 1/sqrt(10)), 
+            fill = "red", xlim = c(0.5201484, 1.1)) +
+  stat_function(fun = dnorm, n = 101, args = list(mean = 0, sd = 1/sqrt(10))) +
+  labs(y = "density") + 
+  theme_minimal(base_size = 15) +
+  labs(title = "Calculating power") +
+  geom_area(stat = "function", fun = dnorm, args = list(mean = 0.8, sd = 1/sqrt(10)), 
+            fill = "blue", xlim = c(0.5201484, 2.0), alpha = 0.5) +
+  stat_function(fun = dnorm, n = 101, args = list(mean = 0.8, sd = 1/sqrt(10))) +
+  geom_text(aes(x = 0, y = 1.2), label = "H0", check_overlap = T) +
+  geom_text(aes(x = 0.8, y = 1.2), label = "Ha", check_overlap = T)
+
+```
+
+
+## Size of the difference
+
+### Effect of changing the $\mu_{1}$
+
+Imagine we our $H_{0}$ is a standard normal (mean=0, SD=1) and we set our $\alpha$ at 0.05.  
+
+If the true mean of our sampled population is 1.7 standard deviations above the $\mu_{0}$, 
+
+
+what does our $\beta$ look like?
+
+### Effect of changing the $\mu_{1}$
+```{r powerpic, echo=FALSE}
+##students you do not need to know this code
+
+##graph power
+x <- seq(-4, 4, length=1000)
+hx <- dnorm(x, mean=0, sd=1)
+
+plot(x, hx, type="n", xlim=c(-4, 8), ylim=c(0, 0.5), 
+     ylab = "",
+     xlab = "",
+     main= expression(paste("Type II (", beta, ") error")), axes=FALSE)
+axis(1, at = c(-qnorm(.025), 0, -4), 
+     labels = expression("p-value", 0, -infinity ))
+
+shift = qnorm(1-0.025, mean=0, sd=1)*1.7
+xfit2 <- x + shift
+yfit2 <- dnorm(xfit2, mean=shift, sd=1)
+
+# Print null hypothesis area
+col_null = "#AAAAAA"
+polygon(c(min(x), x,max(x)), c(0,hx,0), col=col_null, lwd=2, density=c(10, 40), angle=-45, border=0)
+lines(x, hx, lwd=2, lty="dashed", col=col_null)
+
+
+# The alternative hypothesis area
+
+## The red - underpowered area
+lb <- min(xfit2)
+ub <- round(qnorm(.975),2)
+col1 = "#CC2222"
+
+i <- xfit2 >= lb & xfit2 <= ub
+polygon(c(lb,xfit2[i],ub), c(0,yfit2[i],0), col=col1)
+
+## The green area where the power is
+col2 = "#22CC22"
+i <- xfit2 >= ub
+polygon(c(ub,xfit2[i],max(xfit2)), c(0,yfit2[i],0), col=col2)
+
+# Outline the alternative hypothesis
+lines(xfit2, yfit2, lwd=2)
+
+axis(1, at = (c(ub, max(xfit2))), labels=c("", expression(infinity)), 
+     col=col2, lwd=1, lwd.tick=FALSE)
+
+legend("topright", inset=.015, title="Color",
+       c("Null hypothesis","Type II error", "True"), fill=c(col_null, col1, col2), 
+       angle=-45,
+       density=c(20, 1000, 1000), horiz=FALSE)
+
+abline(v=ub, lwd=2, col="#000088", lty="dashed")
+
+arrows(ub, 0.45, ub+1, 0.45, lwd=3, col="#008800")
+arrows(ub, 0.45, ub-1, 0.45, lwd=3, col="#880000")
+```
+
+### Effect of changing the $\mu_{1}$ 
+
+What happens if the "true" mean is closer to the Null?
+
+### Effect of changing the $\mu_{1}$
+
+```{r powerpic2, echo=FALSE}
+
+
+##graph power
+x <- seq(-4, 4, length=1000)
+hx <- dnorm(x, mean=0, sd=1)
+
+plot(x, hx, type="n", xlim=c(-4, 8), ylim=c(0, 0.5), 
+     ylab = "",
+     xlab = "",
+     main= expression(paste("Type II (", beta, ") error")), axes=FALSE)
+axis(1, at = c(-qnorm(.025), 0, -4), 
+     labels = expression("p-value", 0, -infinity ))
+
+shift = qnorm(1-0.025, mean=0, sd=1)*1.2
+xfit2 <- x + shift
+yfit2 <- dnorm(xfit2, mean=shift, sd=1)
+
+# Print null hypothesis area
+col_null = "#AAAAAA"
+polygon(c(min(x), x,max(x)), c(0,hx,0), col=col_null, lwd=2, density=c(10, 40), angle=-45, border=0)
+lines(x, hx, lwd=2, lty="dashed", col=col_null)
+
+
+# The alternative hypothesis area
+
+## The red - underpowered area
+lb <- min(xfit2)
+ub <- round(qnorm(.975),2)
+col1 = "#CC2222"
+
+i <- xfit2 >= lb & xfit2 <= ub
+polygon(c(lb,xfit2[i],ub), c(0,yfit2[i],0), col=col1)
+
+## The green area where the power is
+col2 = "#22CC22"
+i <- xfit2 >= ub
+polygon(c(ub,xfit2[i],max(xfit2)), c(0,yfit2[i],0), col=col2)
+
+# Outline the alternative hypothesis
+lines(xfit2, yfit2, lwd=2)
+
+axis(1, at = (c(ub, max(xfit2))), labels=c("", expression(infinity)), 
+     col=col2, lwd=1, lwd.tick=FALSE)
+
+legend("topright", inset=.015, title="Color",
+       c("Null hypothesis","Type II error", "True"), fill=c(col_null, col1, col2), 
+       angle=-45,
+       density=c(20, 1000, 1000), horiz=FALSE)
+
+abline(v=ub, lwd=2, col="#000088", lty="dashed")
+
+arrows(ub, 0.45, ub+1, 0.45, lwd=3, col="#008800")
+arrows(ub, 0.45, ub-1, 0.45, lwd=3, col="#880000")
+```
+
+### Effect of changing the $\mu_{1}$
+
+What happens if the "true" mean is further from the null?
+
+### Effect of changing the $\mu_{1}$
+
+```{r powerpic3, echo=FALSE}
+
+##graph power
+x <- seq(-4, 4, length=1000)
+hx <- dnorm(x, mean=0, sd=1)
+
+plot(x, hx, type="n", xlim=c(-4, 8), ylim=c(0, 0.5), 
+     ylab = "",
+     xlab = "",
+     main= expression(paste("Type II (", beta, ") error")), axes=FALSE)
+axis(1, at = c(-qnorm(.025), 0, -4), 
+     labels = expression("p-value", 0, -infinity ))
+
+shift = qnorm(1-0.025, mean=0, sd=1)*2.4
+xfit2 <- x + shift
+yfit2 <- dnorm(xfit2, mean=shift, sd=1)
+
+# Print null hypothesis area
+col_null = "#AAAAAA"
+polygon(c(min(x), x,max(x)), c(0,hx,0), col=col_null, lwd=2, density=c(10, 40), angle=-45, border=0)
+lines(x, hx, lwd=2, lty="dashed", col=col_null)
+
+
+# The alternative hypothesis area
+
+## The red - underpowered area
+lb <- min(xfit2)
+ub <- round(qnorm(.975),2)
+col1 = "#CC2222"
+
+i <- xfit2 >= lb & xfit2 <= ub
+polygon(c(lb,xfit2[i],ub), c(0,yfit2[i],0), col=col1)
+
+## The green area where the power is
+col2 = "#22CC22"
+i <- xfit2 >= ub
+polygon(c(ub,xfit2[i],max(xfit2)), c(0,yfit2[i],0), col=col2)
+
+# Outline the alternative hypothesis
+lines(xfit2, yfit2, lwd=2)
+
+axis(1, at = (c(ub, max(xfit2))), labels=c("", expression(infinity)), 
+     col=col2, lwd=1, lwd.tick=FALSE)
+
+legend("topright", inset=.015, title="Color",
+       c("Null hypothesis","Type II error", "True"), fill=c(col_null, col1, col2), 
+       angle=-45,
+       density=c(20, 1000, 1000), horiz=FALSE)
+
+abline(v=ub, lwd=2, col="#000088", lty="dashed")
+
+arrows(ub, 0.45, ub+1, 0.45, lwd=3, col="#008800")
+arrows(ub, 0.45, ub-1, 0.45, lwd=3, col="#880000")
+```
+
+## Example From Pagano and Gauvreau "Principles of Biostatistics"
+
+### Example: from Pagano text ch. 10
+Suppose we have a sample of 25 20 to 74 year old males from the United States.  We know that 20-24 year old males have a mean serum cholesterol level of 180 mg/100ml.  Since cholesterol tends to increase with age, we would expect the mean cholesterol in our sample (of 20-74 year olds) to be higher than 180 mg/100ml.  We also assume the standard deviation in the population is 46 mg/100ml.  
+
+This is a one-sided hypothesis with $\alpha$ = 0.05, we can use r to get the critical value in Z 
+```{r setcon, }
+qnorm(0.95, 0,1)
+```
+
+so $H_{0}$ would be rejected at $Z\ge 1.645$
+
+At what mean value of cholesterol would we decide to reject the null?
+
+### Example: from Pagano text ch. 10
+
+$$Z=\frac{\overline{x}-\mu_0}{\frac{\sigma}{\sqrt{n}}}$$
+
+$$1.645=\frac{\overline{x}-180}{\frac{46}{\sqrt{25}}}$$
+Solve this for $\overline{x}$
+
+
+$$\bar{x} = 1.645 \times\frac{46}{\sqrt{25}}+180=195.1$$
+
+### Example: from Pagano text ch. 10
+So here we have our null distribution with the value at which we reject the null
+```{r powerpic4, echo=FALSE, out.width="90%"}
+
+##graph power
+x <- seq(-4, 4, length=1000)
+hx <- dnorm(x, mean=0, sd=1)
+
+plot(x, hx, type="n", xlim=c(-4, 8), ylim=c(0, 0.5), 
+     ylab = "",
+     xlab = "",
+     main= expression(paste("Critical value, 195.1")), axes=FALSE)
+axis(1, at = c(-qnorm(.025), 0, -4), 
+     labels = expression("p-value", 180, -infinity ))
+
+shift = qnorm(1-0.025, mean=0, sd=1)*2.4
+xfit2 <- x + shift
+yfit2 <- dnorm(xfit2, mean=shift, sd=1)
+
+# Print null hypothesis area
+col_null = "#AAAAAA"
+polygon(c(min(x), x,max(x)), c(0,hx,0), col=col_null, lwd=2, density=c(10, 40), angle=-45, border=0)
+lines(x, hx, lwd=2, lty="dashed", col=col_null)
+
+
+abline(v=1.645, lwd=2, col="#000088", lty="dashed")
+
+```
+
+What is our $\beta$ ? 
+
+### Example: from Pagano text ch. 10
+
+We must choose a value at which to evaluate $\beta$.  Here we will choose an alternate hypothesis that $\mu_{1}=211$.  Since we know a sample mean less than 195.1 causes us to fail to reject $H_{0}$ we need to calculate the proportion of a distribution centered at 211mg/100ml that would be below this value.
+
+$$Z=\frac{195.1-211}{\frac{46}{\sqrt{25}}}$$
+
+$$Z=-1.73$$
+
+
+### Example: from Pagano text ch. 10
+Using R to calculate the probability, 
+```{r exnorm, echo=TRUE}
+pnorm(-1.73, 0,1)
+```
+
+Thus $\beta$ P(do not reject null(180)|Null is false (true population mean is 211)) is ~0.042
+
+Remember that Power is 1-$\beta$ = P(reject null | null is false)
+
+In this example, Power is 1-0.042 = 0.958
+
+### Example: from Pagano text ch. 10
+
+```{r powerpic5, echo=FALSE}
+
+##graph power
+x <- seq(-4, 4, length=1000)
+hx <- dnorm(x, mean=0, sd=1)
+
+plot(x, hx, type="n", xlim=c(-4, 8), ylim=c(0, 0.5), 
+     ylab = "",
+     xlab = "",
+     main= expression(paste("Critical value, 195.1")), axes=FALSE)
+axis(1, at = c(-qnorm(.025), 0, -4), 
+     labels = expression("p-value", 180, -infinity ))
+
+shift = qnorm(1-0.025, mean=0, sd=1)*2
+xfit2 <- x + shift
+yfit2 <- dnorm(xfit2, mean=shift, sd=1)
+
+# Print null hypothesis area
+col_null = "#AAAAAA"
+polygon(c(min(x), x,max(x)), c(0,hx,0), col=col_null, lwd=2, density=c(10, 40), angle=-45, border=0)
+lines(x, hx, lwd=2, lty="dashed", col=col_null)
+
+
+# The alternative hypothesis area
+
+## The red - underpowered area
+lb <- min(xfit2)
+ub <- round(qnorm(.95),2)
+col1 = "#CC2222"
+
+i <- xfit2 >= lb & xfit2 <= ub
+polygon(c(lb,xfit2[i],ub), c(0,yfit2[i],0), col=col1)
+
+## The green area where the power is
+col2 = "#22CC22"
+i <- xfit2 >= ub
+polygon(c(ub,xfit2[i],max(xfit2)), c(0,yfit2[i],0), col=col2)
+
+# Outline the alternative hypothesis
+lines(xfit2, yfit2, lwd=2)
+
+axis(1, at = (c(ub, max(xfit2))), labels=c("", expression(infinity)), 
+     col=col2, lwd=1, lwd.tick=FALSE)
+
+legend("topright", inset=.015, title="Color",
+       c("Null hypothesis","Type II error", "True"), fill=c(col_null, col1, col2), 
+       angle=-45,
+       density=c(20, 1000, 1000), horiz=FALSE)
+
+abline(v=ub, lwd=2, col="#000088", lty="dashed")
+
+arrows(ub, 0.45, ub+1, 0.45, lwd=3, col="#008800")
+arrows(ub, 0.45, ub-1, 0.45, lwd=3, col="#880000")
+```
+
+### Size of the difference
+So we have we learned about power and $\beta$ ?
+
+If we increase the size of the difference we are looking for, what happens to power?
+
+What happens to $\beta$ as we increase the size of the difference?
+
+## Size of the sample
+
+
+### Remember what happens to our test statistic as sample size increases
+
+
+$$Z=\frac{\overline{x}-\mu_0}{\frac{\sigma}{\sqrt{n}}}$$
+
+
+
+### Increasing sample size
+If we look at this graph from earlier in the slides, what do we expect to change if we increase our sample size from 25 to 100?
+```{r size1, echo=FALSE}
+##students you do not need to know this code
+
+##graph power
+x <- seq(-4, 4, length=1000)
+hx <- dnorm(x, mean=0, sd=1)
+
+plot(x, hx, type="n", xlim=c(-4, 8), ylim=c(0, 0.5), 
+     ylab = "",
+     xlab = "",
+     main= expression(paste("Type II (", beta, ") error")), axes=FALSE)
+axis(1, at = c(-qnorm(.025), 0, -4), 
+     labels = expression("p-value", 0, -infinity ))
+
+shift = qnorm(1-0.025, mean=0, sd=1)*1.7
+xfit2 <- x + shift
+yfit2 <- dnorm(xfit2, mean=shift, sd=1)
+
+# Print null hypothesis area
+col_null = "#AAAAAA"
+polygon(c(min(x), x,max(x)), c(0,hx,0), col=col_null, lwd=2, density=c(10, 40), angle=-45, border=0)
+lines(x, hx, lwd=2, lty="dashed", col=col_null)
+
+
+# The alternative hypothesis area
+
+## The red - underpowered area
+lb <- min(xfit2)
+ub <- round(qnorm(.975),2)
+col1 = "#CC2222"
+
+i <- xfit2 >= lb & xfit2 <= ub
+polygon(c(lb,xfit2[i],ub), c(0,yfit2[i],0), col=col1)
+
+## The green area where the power is
+col2 = "#22CC22"
+i <- xfit2 >= ub
+polygon(c(ub,xfit2[i],max(xfit2)), c(0,yfit2[i],0), col=col2)
+
+# Outline the alternative hypothesis
+lines(xfit2, yfit2, lwd=2)
+
+axis(1, at = (c(ub, max(xfit2))), labels=c("", expression(infinity)), 
+     col=col2, lwd=1, lwd.tick=FALSE)
+
+legend("topright", inset=.015, title="Color",
+       c("Null hypothesis","Type II error", "True"), fill=c(col_null, col1, col2), 
+       angle=-45,
+       density=c(20, 1000, 1000), horiz=FALSE)
+
+abline(v=ub, lwd=2, col="#000088", lty="dashed")
+
+arrows(ub, 0.45, ub+1, 0.45, lwd=3, col="#008800")
+arrows(ub, 0.45, ub-1, 0.45, lwd=3, col="#880000")
+```
+
+### Increasing sample size
+```{r size2, echo=FALSE}
+##students you do not need to know this code
+
+##graph power
+x <- seq(-4, 4, length=1000)
+hx <- dnorm(x, mean=0, sd=.5)
+
+plot(x, hx, type="n", xlim=c(-4, 8), ylim=c(0, 0.8), 
+     ylab = "",
+     xlab = "",
+     main= expression(paste("Type II (", beta, ") error")), axes=FALSE)
+axis(1, at = c(-qnorm(.025,0,.5), 0, -4), 
+     labels = expression("p-value", 0, -infinity ))
+
+shift = qnorm(1-0.025, mean=0, sd=1)*1.7
+xfit2 <- x + shift
+yfit2 <- dnorm(xfit2, mean=shift, sd=.5)
+
+# Print null hypothesis area
+col_null = "#AAAAAA"
+polygon(c(min(x), x,max(x)), c(0,hx,0), col=col_null, lwd=2, density=c(10, 40), angle=-45, border=0)
+lines(x, hx, lwd=2, lty="dashed", col=col_null)
+
+
+# The alternative hypothesis area
+
+## The red - underpowered area
+lb <- min(xfit2)
+ub <- round(qnorm(.975,0,.5),2)
+col1 = "#CC2222"
+
+i <- xfit2 >= lb & xfit2 <= ub
+polygon(c(lb,xfit2[i],ub), c(0,yfit2[i],0), col=col1)
+
+## The green area where the power is
+col2 = "#22CC22"
+i <- xfit2 >= ub
+polygon(c(ub,xfit2[i],max(xfit2)), c(0,yfit2[i],0), col=col2)
+
+# Outline the alternative hypothesis
+lines(xfit2, yfit2, lwd=2)
+
+axis(1, at = (c(ub, max(xfit2))), labels=c("", expression(infinity)), 
+     col=col2, lwd=1, lwd.tick=FALSE)
+
+legend("topright", inset=.015, title="Color",
+       c("Null hypothesis","Type II error", "True"), fill=c(col_null, col1, col2), 
+       angle=-45,
+       density=c(20, 1000, 1000), horiz=FALSE)
+
+abline(v=ub, lwd=2, col="#000088", lty="dashed")
+
+arrows(ub, 0.45, ub+1, 0.45, lwd=3, col="#008800")
+arrows(ub, 0.45, ub-1, 0.45, lwd=3, col="#880000")
+```
+
+
+
+###  Sample Size
+So how does increasing sample size impact power and $\beta$
+
+If we increase sample size we expect $\beta$ to   ?
+
+And we expect power to ?
+
+How might this affect our decisions when we are planning a study?
+
+
+### Sample Size and phase of clinical trials
+From [FDA.com](https://www.fda.gov/forpatients/approvals/drugs/ucm405622.htm#Clinical_Research_Phase_Studies)
+
+
+|    |Size                      | Length of study      | Purpose                       |  
+|----|--------------------------|----------------------|-------------------------------|
+|I   |  20-100                  |  Months              | Safety and dosage             | 
+|II  | up to several hundred    |  Months to ~ 2 years | Efficacy and side effects     | 
+|III | ~300 to 3,000            |  1-4 years           | Efficacy and adverse effects  | 
+|IV  | Thousands being treated  | Ongoing              | Safety and efficacy           | 
+
+
+What would you guess here about the size of the difference that would cause you to stop a trial at each of these phases?
+
+How do we use what we have learned about power to plan our studies?      
+      
+## Calculating sample size
+
+### Calculating Sample Size
+While you may be asked after the fact what power you had to detect a difference in your study, when you are planning a study you would usually want to figure out what sample size would be necessary to provide a specified power for a one sided Z test.
+
+### Sample size when conducting a hypothesis test
+
+To think about sample size for a z-test, four things matter:
+
+- **Significance level $\alpha$ :** How much protection do we want against getting a 
+statistical significant results from our sample when there really is no effect
+in the population?
+- **Effect size:** How large an effect in the population is important in practice?
+- **Power $(1-\beta)$:** How confident do we want to be that our study will detect an effect
+of the size we think is important? I.e., what is the probability of rejecting
+$H_0$ when the alternative hypothesis is true?
+- **variability in the population**:  Remember that the underlying variability in our population affects the variability of our sample mean
+
+
+### Example 
+For example, using our previous study of mean serum cholesterol levels, if we remember that we assumed the following:
+
+$H_{0}$ :  $\mu\leq 180 mg/100ml$
+
+$\alpha$:  0.01
+
+$\sigma$: 46 
+
+If the true population mean is as large as 211 and we want to risk only a 5% chance of failing to reject the null, so $\beta=0.05$ and power would be = $1-\beta=0.95$
+
+### Calculating Sample Size
+We start by finding the Z value at which we would reject $H_{0}$ at $\alpha$ = 0.01
+
+We call this value $Z_{\alpha}$
+
+```{r samp1, echo=TRUE}
+qnorm(0.01, lower=FALSE)
+```
+
+Solve for $\overline{x}$
+
+$$2.32 =\frac{\overline{x}-180}{\frac{46}{\sqrt{n}}}$$
+$$\overline{x}=180+2.32(\frac{46}{\sqrt{n}})$$
+
+### Calculating Sample Size
+
+Next we find the Z value at which we would reject $H_{A}$ at $\beta$ = 0.05
+
+We call this value $Z_{\beta}$
+
+```{r samp2, echo=TRUE}
+qnorm(0.05)
+```
+Solve for $\overline{x}$
+
+$$-1.645 =\frac{\overline{x}-211}{\frac{46}{\sqrt{n}}}$$
+$$\overline{x}=211-1.645(\frac{46}{\sqrt{n}})$$
+
+### Calculating Sample Size
+
+Because the value of $\overline{x}$ represents the same cutpoint for each of these, we can set the two equations equal to each other and solve for n.
+
+$$180+2.32\left(\frac{46}{\sqrt{n}}\right)=211-1.645\left(\frac{46}{\sqrt{n}}\right)$$
+$$\sqrt{n}(180-211)=(-2.32+(-1.645))*46$$
+$$n=\left(\frac{(-2.32-1.645)*(46)}{(180-211)}\right)^2$$
+$$n=34.6$$
+As we cannot include 0.6 of a person, the convention is to round up.  So we would need 35 people in our sample.
+
+### Calculating Sample Size
+
+The more general way to express this sample size formula for a one sided Z test is
+
+$$n=\left(\frac{(Z_{\alpha}+Z_{\beta})*(\sigma)}{(\mu_{1}-\mu_{0})}\right)^2$$
+For a two sided Z test this would be 
+$$n=\left(\frac{(Z_{(\frac{\alpha}{2})}+Z_{\beta})*(\sigma)}{(\mu_{1}-\mu_{0})}\right)^2$$
+
+
+## Determining sample size for a margin of error
+
+### Selecting an appropriate sample size 
+
+How big does the sample size need to be to give a certain size of confidence interval?
+
+Suppose you want your margin of error to equal $m$. What sample size do you need
+to obtain a margin of error of $m$? 
+
+You can re-frame the sample size formula for a two sided hypothesis test  
+
+$$n=\left(\frac{(Z_{(\frac{\alpha}{2})}+Z_{\beta})*(\sigma)}{(\mu_{1}-\mu_{0})}\right)^2$$
+
+to a margin of error
+
+$$n=\Big(\frac{Z^*\sigma}{m}\Big)^2$$
+
+### Example of calculation sample size
+
+Body temperature has a known $\sigma=0.6$ degrees F. We want to estimate the mean
+body temperature $\mu$ for healthy adults within $\pm0.05$ F with 95% confidence. 
+How many healthy adults must we measure?
+
+$$n=\Big(\frac{z^*\sigma}{m}\Big)^2$$
+$$n=\Big(\frac{1.96\times 0.6}{0.05}\Big)^2 = 553.2$$
+
+We must recruit 554 (round up!) healthy adults for this study.
+
+### Parting Humor
+From xkcd.com
+
+```{r phumor, echo=F, out.width = "80%", fig.align='center'}
+knitr::include_graphics("null_hypothesis.png")
+```
+
+ 

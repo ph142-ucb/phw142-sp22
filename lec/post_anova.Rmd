@@ -1,0 +1,310 @@
+---
+title: "ANOVA continued"
+output:
+  beamer_presentation:
+    slide_level: 3
+  ioslides_presentation: default
+  slidy_presentation: default
+header-includes:
+- \usetheme{Goettingen}
+- \renewcommand{\textbf}{\structure}
+- \renewcommand{\mathbf}{\structure}
+- \addtobeamertemplate{navigation symbols}{}{ \usebeamerfont{footline} }
+- \addtobeamertemplate{navigation symbols}{}{ \usebeamercolor[fg]{footline} }
+- \addtobeamertemplate{navigation symbols}{}{ \insertframenumber/\inserttotalframenumber
+  }
+- \usepackage[os=win]{menukeys}
+- \usepackage{soul}
+- \usepackage{xcolor}
+- \usepackage{caption}
+- \usepackage[os=win]{menukeys}
+- \usepackage{copyrightbox}
+classoption: aspectratio=169
+---
+
+<!-- libraries -->
+```{r,include=FALSE,purl=FALSE}
+library(knitr) # for include_graphics() 
+library(dplyr)
+library(ggplot2)
+library(forcats)
+```
+
+### Today's lecture
+
+- Worked example of ANOVA testing
+- What happens after a significant ANOVA
+  - pairwise comparisons
+  - adjustment for multiple testing
+
+### The test statistic (ANOVA F Statistic)
+
+$$F=\frac{\text{variation among group means}}{\text{variation among individuals in the same group}}$$
+
+## Example:  Cannabis to treat brain cancer
+
+### Example: Cannabis to treat brain cancer (in mice)
+
+High-grade glioma is an aggressive type of brain cancer with a low long-term
+survival rate. Cannabinoids, which are chemical compounds found in cannabis, are
+thought to inhibit glioma cell growth. Researchers transplanted glioma cells in 
+otherwise-healthy mice, and then randomly assigned these mice to 4 cancer 
+treatments: irradiation alone, cannabinoids, alone, irradiation combined with 
+cannabinoids, or no cancer treatment. The treatments were administered for 21 
+days, after which the glioma tumor volume (in cubic millimeters) was assessed
+in each mouse using brain imaging.
+
+### The data
+
+```{r, echo=FALSE}
+treatment <- c(rep("Irradiation", 4), rep("Cannabinoids", 5), rep("Both", 6),
+               rep("Neither", 7))
+
+tumor_volume <- c(30, 46, 46, 95, # Irradiation
+                  12, 14, 16, 41, 47, # Cannabinoids 
+                  5, 4, 4, 4, 10, 9, # Both
+                  24, 30, 43, 51, 62, 32, 96) # Neither
+
+cancer_data <- data.frame(treatment, tumor_volume)
+```
+```{r}
+head(cancer_data)
+```
+
+### Organize the data
+
+- Think about how you want the data to look. 
+- I want to plot the raw data points and display the mean for each treatment group
+- I also want to specify the order that the treatment groups show up in the graph
+
+```{r, out.width="80%", fig.align='center'}
+# specify the order of the treatment groups for plotting
+library(forcats) 
+cancer_data <- cancer_data %>% 
+  mutate(trt_order = fct_relevel(treatment, c("Neither", "Irradiation", 
+                                              "Cannabinoids", "Both")))
+```
+
+### Look at summary statistics
+```{r}
+# calculate the means and SD for each group
+summary_stats <- cancer_data %>% 
+  group_by(trt_order) %>% 
+  summarise(mean_vol = mean(tumor_volume),
+            sd_vol = sd(tumor_volume), 
+            samp_size = n())
+
+summary_stats
+```
+
+### Graph the data
+ggplot(cancer_data, aes(x = trt_order, y = tumor_volume)) + 
+
+  geom_jitter(pch = 4, width = 0.1) + 
+
+  geom_point(data = summary_stats, aes(y = mean_vol, col = "Mean"), pch = 19) +
+
+  labs(y = "Tumor volume (mm cubed)", x = "Treatment") +
+
+  theme_minimal(base_size = 15)
+
+note:
+geom_jitter() with width = 0.1 randomly "jitters" the location of the points 
+along the x axis so that we can see each of them since some have the exact
+same values. 
+
+### Graph the data
+```{r, out.width="80%", fig.align='center', echo=FALSE}
+ggplot(cancer_data, aes(x = trt_order, y = tumor_volume)) + 
+  geom_jitter(pch = 4,width = 0.1) + 
+  geom_point(data = summary_stats, aes(y = mean_vol, col = "Mean"), pch = 19) +
+  labs(y = "Tumor volume (mm cubed)", x = "Treatment") +
+  theme_minimal(base_size = 15)
+```
+
+### ANOVA in R: use `aov()`, then `tidy()` it up!
+```{r}
+library(broom)
+cancer_anova <- aov(formula = tumor_volume ~ treatment, data = cancer_data)
+tidy(cancer_anova)
+```
+
+This $F$ says that the variation between the means is nearly 7 times as large as the variation within the groups. 
+
+This p-value is equal to 0.3%. There is a 0.3% chance of observing the $F$ statistic we observed (or more extreme) under
+the null hypothesis that all the means are the same. 
+
+
+### P value of the F test 
+Remember 
+
+- $k$ is the number of groups being compared and $N_{Total} = n_1 + n_2 + ... + n_k$ is the total sample size across all the groups.
+
+- The $F$ statistic follows an $F$ distribution with $k-1$ degrees of 
+freedom in the numerator and $N_{Total}-k$ degrees of freedom in the denominator
+
+- The p-value of the ANOVA F statistic is always the area to the right of the 
+test statistic
+
+```{r}
+pf(6.699489, df1 = 3, df2 = 22 - 4, lower.tail = F)
+```
+
+
+### What now?
+
+- The p-value equaled 0.003, indicating a difference. But what groups are
+actually different?
+
+## After a significant ANOVA...
+
+### next steps...
+- You could look at all pairwise differences (i.e., comparing each combination of
+treatments), but we have to be careful because we will find differences "just by 
+chance" if we compare enough groups.
+
+###  A key example of what not to do?
+
+```{r cornell, fig.align='center', out.width="60%", echo=FALSE }
+knitr::include_graphics("phack.png")
+```
+
+### A brief reminder about p-hacking
+Remember, one of the issues with multiple comparisons is that when you repeatedly question the same dataset, you can end up finding "significant" results by chance alone.
+
+We talked about this before as p-hacking or p-fishing or data dredging
+
+This along with other issues that are sometimes unconscious can lead to bias in what is found and what is published.
+
+Ioannidis, John P.A. (August 30, 2005). "Why Most Published Research Findings Are False". PLoS Medicine. 
+https://journals.plos.org/plosmedicine/article?id=10.1371/journal.pmed.0020124
+
+
+### Strategies for multiple comparisons
+
+- Conduct multiple pairwise tests and adjust the critical value for significance using a Bonferroni correction 
+
+- Use a Tukey's HSD to generate the pairwise comparisons with adjusted p-values
+
+## Bonferroni
+
+### Bonferroni Adjustment for multiple comparisons
+We could do a series, comparing each combination of groups in pairs or $k\choose 2$ comparisons.
+
+To compensate for making multiple comparisons and set the overall probability of making a type I error at 0.05, we can adjust our $\alpha$ to $\alpha*$ for each comparison by dividing by the number of comparisons we are making.  
+
+$$\alpha*=\left( \frac{0.05}{ {k \choose 2} } \right)$$
+We then use $\alpha*$ as the significance level for each individual comparison. 
+So for a comparison of 3 groups we would use an $\alpha$ of 0.0167 as the significance level for each comparison.
+
+This modification is known as the Bonferroni correction.
+Bonferroni is fairly basic and can become unwieldy - what happens if you have a lot of groups?
+
+
+### Bonferroni for our example
+This would entail doing a series of two-sample t tests for each pairwise comparison or 4 choose 2 comparisons = 6 two-sample tests so the adjustment would be:
+$$\alpha*=\left( \frac{0.05}{ {4 \choose 2} } \right)=\left( \frac{0.05}{ {6} } \right)=0.0083$$
+
+###  Bonferroni for our example
+So we would conduct each pairwise test:
+```{r}
+both<-cancer_data%>%filter(treatment=="Both")%>%select(tumor_volume)
+neither<-cancer_data%>%filter(treatment=="Neither")%>%select(tumor_volume)
+can<-cancer_data%>%filter(treatment=="Cannabinoids")%>%select(tumor_volume)
+irr<-cancer_data%>%filter(treatment=="Irradiation")%>%select(tumor_volume)
+n_b<-t.test(neither, both, alternative="two.sided")
+c_b<-t.test(can,both, alternative="two.sided")
+i_b<-t.test(irr, both, alternative="two.sided")
+n_c<-t.test(neither, can, alternative="two.sided")
+n_i<-t.test(neither, irr, alternative="two.sided")
+c_i<-t.test(can, irr, alternative="two.sided")
+```
+
+###  Bonferroni for our example
+and compare the p-value of this test to an alpha of 0.0083
+```{r}
+t_statistics<-c(n_b$statistic, c_b$statistic, i_b$statistic, n_c$statistic, n_i$statistic, c_i$statistic)
+p_values<-c(n_b$p.value, c_b$p.value, i_b$p.value, n_c$p.value, n_i$p.value)
+t_statistics
+p_values
+```
+
+## Tukey's HSD
+
+### Tukey's honest significant differences (Tukey's HSD)
+
+```{r tukey, fig.align='center',echo=FALSE, out.width="50%" }
+knitr::include_graphics("tukey.png")
+```
+
+### Tukey's honestly significant differences (Tukey's HSD)
+- Tukey's test maintains a 5% **experimentwise** or **"family"** error rate.
+- Even if you make many pairwise comparisons, the overall error rate is 5% (at most)
+- Overcomes the issue of multiple testing. Recall: If you conducted 100 tests with a 5% error rate 
+(i.e., $\alpha=0.05$) AND the $H_0$ was always true, how many p-values would you
+expect to be < 0.05?
+- The Tukey's error rate is 5% **overall**, no matter how many tests you do. Thus
+it overcomes the problem of **multiple testing**
+
+### `TukeyHSD()` to calculate the differences in R
+
+You can think of the TukeyHSD() as a wrap-around for the anova, you can either nest the statements like this:
+
+TukeyHSD(aov(outcome ~ group))
+
+or save the ANOVA as an object and use that in the statement:
+
+modelresult<-aov(outcome ~ group)
+
+TukeyHSD(modelresult, overall_alpha)
+
+
+
+### `TukeyHSD()` to calculate the differences in R
+Here is the R code and output for the cancer example:
+
+```{r, out.width="80%", fig.align='center'}
+diffs <- TukeyHSD(cancer_anova, conf.level = 0.05) %>% tidy()
+diffs%>%select(contrast, adj.p.value)
+```
+
+### `TukeyHSD()` to calculate the differences in R
+Each row in the table corresponds to a pairwise test. So the first row is looking
+at the difference between Cannabinoids vs. Both treatments. The estimated difference
+in means is 20 and the 95% CI is 13.54 to 26.45. The adjusted p-value is 0.38.
+
+- "Adjusted" means that it is adjusted for conducting multiple tests. The unadjusted
+p-value would be smaller. You can tell the unadjusted p-value would be < 0.05 because
+the 95% CI doesn't include 0.
+- **Thus, when you have an adjusted test you can't use the CI to infer the value 
+of the p-value!**
+
+### Visualize the pairwise differences
+
+```{r, fig.align='center', out.width="90%", echo=F}
+#Students do not need to know how to do this
+ggplot(diffs, aes(x = contrast, y = estimate)) + geom_point() +
+  geom_segment(aes(y = conf.low, yend = conf.high, xend = contrast)) +
+  theme_minimal(base_size = 15) +
+  geom_hline(aes(yintercept = 0), lty =2) +
+  geom_text(aes(label = paste0("p-value:\n ", round(adj.p.value, 2))), nudge_x = 0.3) +
+  labs(y = "Estimated difference", x = "") + 
+  scale_x_discrete(labels = c("Cannabinoids\n vs. both", "Irradiation\n vs. both",
+                              "Irradiation vs.\ncannabinoids", "Neither\n vs. both", 
+                              "Neither vs.\n Cannabinoids", "Neither vs.\n Irradiation"))
+```
+
+### Review raw data for comparison
+```{r, out.width="80%", fig.align='center', echo=FALSE}
+ggplot(cancer_data, aes(x = trt_order, y = tumor_volume)) + 
+  geom_jitter(pch = 4,width = 0.1) + 
+  geom_point(data = summary_stats, aes(y = mean_vol, col = "Mean"), pch = 19) +
+  labs(y = "Tumor volume (mm cubed)", x = "Treatment") +
+  theme_minimal(base_size = 15)
+```
+
+
+### Parting humor XKCD.com
+```{r parting, fig.align='center', out.width="80%", echo=FALSE }
+knitr::include_graphics("boyfriend.png")
+```

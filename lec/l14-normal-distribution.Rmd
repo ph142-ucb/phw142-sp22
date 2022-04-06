@@ -1,0 +1,616 @@
+---
+title: "L14:  The normal distribution"
+output:
+  beamer_presentation:
+    slide_level: 3
+  ioslides_presentation: default
+  slidy_presentation: default
+header-includes:
+- \usetheme{Goettingen}
+- \renewcommand{\textbf}{\structure}
+- \renewcommand{\mathbf}{\structure}
+- \addtobeamertemplate{navigation symbols}{}{ \usebeamerfont{footline} }
+- \addtobeamertemplate{navigation symbols}{}{ \usebeamercolor[fg]{footline} }
+- \addtobeamertemplate{navigation symbols}{}{ \insertframenumber/\inserttotalframenumber
+  }
+- \usepackage[os=win]{menukeys}
+- \usepackage{soul}
+- \usepackage{xcolor}
+- \usepackage{caption}
+- \usepackage[os=win]{menukeys}
+- \usepackage{copyrightbox}
+classoption: aspectratio=169
+---
+
+<!-- libraries -->
+```{r,include=FALSE,purl=FALSE}
+library(knitr) # for include_graphics() 
+library(dplyr)
+```
+
+<!-- define default size for R graphics -->
+```{r,include=FALSE,purl=FALSE}
+outputFormat<-opts_knit$get('rmarkdown.pandoc.to')
+if(outputFormat=="beamer"){
+  opts_chunk$set(fig.width=6,fig.height=4)
+}
+```
+
+<!-- define function for external images -->
+```{r,include=FALSE,purl=FALSE}
+image<-function(ff,ss,cc=NULL,ll=NULL){
+  if(is.null(cc)){
+    paste('\\centering','\n',
+          '\\includegraphics[scale=',ss,']{',ff,'}',
+          sep='')
+  } else {
+    paste('\\centering','\n',
+          '\\copyrightbox[b]{',
+          '\\includegraphics[scale=',ss,']{',ff,'}',
+          '}{\\raggedleft{\\tiny \\href{',ll,'}{',cc,'}}}',
+          sep='')    
+  }
+}
+```
+
+<!-- define function for links -->
+```{r,include=FALSE,purl=FALSE}
+link<-function(tt,ll){
+  paste('[\\textcolor[HTML]{ffa328}{\\ul{',tt,'}}]','(',ll,')',sep='')
+}
+```
+
+
+```{r load-libraries, message=F, warning=FALSE, echo=F}
+#don't need to worry about knowing these libraries
+library(jpeg)
+library(grid)
+```
+
+
+### Learning objectives for today
+- Learn about a Normal distribution centered at $\mu$ with a standard deviation of $\sigma$
+- Learn about the standard Normal ($\mu=0 \text{ and }  \sigma=1$)
+- Perform simple calculations by hand using the 68-95-99.7 rule
+- Calculate probabilies above, below or within given values in a normal distribution
+- Calculate the quantile for a specified cummulative probability for any normal distribution
+- Understand and compute Z-scores
+
+## Statistics is everywhere
+
+### Height and success
+```{r, out.width="60%", echo=F}
+knitr::include_graphics("independentheight.png")
+```
+
+### What type of problem is this 
+Remembering back to our PPDAC framework....
+
+What kind of questions are these studies asking?
+
+### Counterfactual
+
+Frayling, one of the study authors said:
+
+>"if you took the same man - say a 5ft 10in man and make him 5ft 7in - and sent him through life, he would be about £1,500 worse off per year” 
+
+
+### Were there important confounders?
+
+This study was published in BMJ (Height, body mass index, and socioeconomic status: Mendelian randomization study in UK Biobank BMJ 2016; 352 doi: https://doi.org/10.1136/bmj.i582 (Published 08 March 2016))
+
+They used mendelian randomization to avoid confounding - and put a DAG in their paper to illustrate
+
+### DAG 
+
+![Study DAG](F1.large.jpg)
+
+### Proposed mechansim
+
+One hypothesized mechanism for the influence of height on success is that those who are perceived as taller than normal experience positive social bias.   
+
+&nbsp;  
+
+But wait.... what does "taller than normal" mean?
+
+
+### Three relevant Definitions of Normal (Mirriam-Webster)
+
+1: Conforming to a type, standard , or regular pattern
+
+2: of, relating to, or characterized by average intelligence or development
+
+**3: relating to, involving, or being a normal curve or normal distribution**
+
+
+
+
+## Probability Distributions
+
+### Empirical vs Theoretical
+
+ - probabilities calculated from a finite amount of observed data are called **Empirical** probabilities
+ - probabilities based on theoretical functions are called **Theoretical Probability Distributions**
+
+### Empirical distributions
+
+What was the empirical distribution we used to visualize a continuous variable in part I of the class?
+
+What did we look at when summarizing continuous variables visually and numerically?
+
+
+How might we summarize height?
+
+### Empirical distribution of height
+Height is a continuous variable so we summarize height in a sample with:
+
+  - Measure of **central tendancy** 
+    - mean
+    - median
+    - mode
+  - Measure of **variability/spread**
+    - standard deviation
+    - IQR
+  - Visually we would look to see if the distribution is
+    - Unimodal
+    - symmetric
+  
+ 
+### Why are we interested in theoretical distributions?
+- Theoretical distributions apply probability theory to describe the behavior of a random variable
+- For continuous variables (like height) this allows us to predict the probability associated with a range of values
+- They help us answer questions about what is "normal" if by "normal" we essentially mean what is expected
+
+## The Normal Distribution
+
+### The Normal distribution
+![Carl Friedrick Gauss](gauss.png)
+
+### Function for Normal Distribution
+The underlying function which generates a probability distribution for a Normal distribution is:
+
+
+```{r, out.width="60%", echo=F}
+knitr::include_graphics("densitynormal.png")
+```
+
+
+
+You do NOT need to remember this
+However you should know that the distribution is defined by two parameters, the mean and standard deviation, and that all the values under the curve must total to 1 (the probability space here is the area under the curve)
+
+### The Normal Distribution N(0,1)
+
+- Here is a Normal distribution with mean ($\mu$) = 0, standard deviation ($\sigma$) = 1 .
+
+```{r load-libraries2, echo=F, out.width = "70%", warning=F, message=F}
+library(ggplot2)
+library(patchwork)
+library(latex2exp)
+library(dplyr)
+
+#students, you don't need to know how to use stat_function()
+p1 <- ggplot(data = data.frame(x = c(-3, 3)), aes(x)) +
+  stat_function(fun = dnorm, n = 101, args = list(mean = 0, sd = 1), col = "orange") +
+  labs(y = "density") + 
+  geom_text(aes(x = 0, y = 0.45), label = "mean = 0 \nsd = 1", check_overlap = T, col = "orange") +
+  scale_x_continuous(limits = c(-5, 5)) + theme_minimal(base_size = 15)
+
+p1
+```
+
+### The Normal Distribution N(0,1) and N(2,1)
+- Let's add another Normal distribution, this one centered at 2, with the same
+standard deviation
+
+```{r, echo=F, out.width="80%"}
+p1 <- p1 + stat_function(fun = dnorm, n = 101, args = list(mean = 2, sd = 1), col = "blue") +
+  geom_text(aes(x = 2, y = 0.45), label = "mean = 2 \nsd = 1", check_overlap = T, col = "blue") 
+p1
+```
+
+### The Normal Distribution N(O,1) and N(2,1) and N(-2,0.5)
+
+- Let's add a third Normal distribution, this one centered at -2, with a standard
+deviation of 0.5
+
+```{r, echo=F, out.width="80%"}
+p1 <- p1 + stat_function(fun = dnorm, n = 101, args = list(mean = -2, sd = 0.5), col = "forest green")  +
+  geom_text(aes(x = -2, y = 0.85), label = "mean = -2 \nsd = 0.5", check_overlap = T, col = "forest green") 
+p1
+```
+
+### The Normal Distribution
+
+- Notice what happens when we make the standard deviation smaller (i.e., the spread is reduced)
+- Why is the distribution "taller"?
+
+### The Normal Distribution
+
+- Can you guess what a Normal distribution with $\mu=1$ and $\sigma=2.5$ would
+look like compared to the others?
+
+### The Normal Distribution
+
+```{r, echo=F, out.width="80%"}
+p1 <- p1 + stat_function(fun = dnorm, n = 101, args = list(mean = 1, sd = 1.5))  +
+  geom_text(aes(x = 1, y = 0.3), label = "mean = 1 \nsd = 2.5", check_overlap = T) 
+p1
+```
+
+### Properties of the Normal distribution
+
+- the mean $\mu$ can be any value, positive or negative
+- the standard deviation $\sigma$ must be a positive number
+- the mean is equal to the median (both = $\mu$)
+- the standard deviation captures the spread of the distribution
+- the height of the curve at each point represents the probability of observing that value (however we never calculate probabilities for an exact value, only for ranges...why?)
+- the area under the Normal distribution is equal to 1 (i.e., it is a density function)
+- a Normal distribution is completely determined by its $\mu$ and $\sigma$
+
+## The 68-95-99.7 rule
+
+### The 68-95-99.7 rule for approximation in all Normal distributions
+
+- Approximately 68% of the data fall within one standard deviation of the mean
+- Approximately 95% of the data fall within two standard deviations of the mean
+- Approximately 99.7% of the data fall within three standard deviations of the mean
+
+Written probabilistically:
+
+- $P(\mu - \sigma < X < \mu + \sigma) \approx 68\%$
+- $P(\mu - 2\sigma < X < \mu + 2\sigma) \approx 95\%$
+- $P(\mu - 3\sigma < X < \mu + 3\sigma) \approx 99.7\%$
+
+###  Calculations using the 68-95-99.7 rule
+Remembering that the normal curve is symmetric we then also know:
+
+- $P(X < \mu - \sigma) \approx 16\%$ 
+- $P(X > \mu + \sigma) \approx 16\%$ 
+- $P(X < \mu - 2\sigma) \approx 2.5\%$
+- $P(X > \mu + 2\sigma) \approx 2.5\%$
+- $P(X < \mu - 3\sigma ) \approx .15\%$
+- $P(X > \mu - 3\sigma ) \approx .15\%$
+
+### Calculations using the 68-95-99.7 rule
+
+Example 11.1 from Baldi & Moore on the heights of young women. The distribution 
+of heights of young women is approximately Normal, with mean $\mu=64.5$ inches 
+and standard deviation $\sigma=2.5$ inches.
+- i.e., $H \sim N(64.5, 2.5)$, where H is defined as the height of a young woman
+
+```{r, echo=F, out.width="70%"}
+#students, you don't need to know this code
+
+p1 <- ggplot(data = data.frame(x = c(56, 73)), aes(x)) +
+  stat_function(fun = dnorm, args = list(mean = 64.5, sd = 2.5)) +
+  geom_area(stat = "function", fun = dnorm, args = list(mean = 64.5, sd = 2.5), fill = "#ec7014", xlim = c(57, 72)) +
+  geom_area(stat = "function", fun = dnorm, args = list(mean = 64.5, sd = 2.5), fill = "#fe9929", xlim = c(59.5, 69.5), alpha = 0.8) +
+  geom_area(stat = "function", fun = dnorm, args = list(mean = 64.5, sd = 2.5), fill = "#fee391", xlim = c(62, 67), alpha = 0.8) +
+  labs(y = "density", x = "") + 
+  geom_text(aes(x = 64.5, y = 0.18), label = "mean = 64.5 \nsd = 2.5", check_overlap = T) +
+  theme_minimal(base_size = 15) +
+  geom_segment(aes(x = 64.5+2.5 , y = 0, xend = 64.5+2.5, yend = 0.1), lty = 1) +
+  geom_segment(aes(x = 64.5-2.5 , y = 0, xend = 64.5-2.5, yend = 0.1), lty = 1) +
+  geom_segment(aes(x = 64.5+2*2.5 , y = 0, xend = 64.5+2*2.5, yend = 0.1), lty = 2) +
+  geom_segment(aes(x = 64.5-2*2.5 , y = 0, xend = 64.5-2*2.5, yend = 0.1), lty = 2) +
+  geom_segment(aes(x = 64.5+3*2.5 , y = 0, xend = 64.5+3*2.5, yend = 0.1), lty = 3) +
+  geom_segment(aes(x = 64.5-3*2.5 , y = 0, xend = 64.5-3*2.5, yend = 0.1), lty = 3) +
+  scale_x_continuous(breaks = c(64.5-2*2.5, 64.5-2.5, 64.5, 64.5+2.5, 64.5+2*2.5), 
+                     labels = c("59.5\n-2 SD", "62\n-1 SD", "64.5\nmean", "67\n+1 SD", "69.5\n+2 SD"),
+                     limits = c(56, 73)) +
+  geom_segment(aes(x = 64.5-2.5, xend = 64.5 + 2.5, y = 0.075, yend = 0.075)) +
+  geom_label(aes(x = 64.5, y = 0.075), label = "68%", fill = "#fee391") +
+  geom_segment(aes(x = 64.5-2*2.5, xend = 64.5 + 2*2.5, y = 0.05, yend = 0.05), lty = 2) +
+  geom_label(aes(x = 64.5, y = 0.05), label = "95%", fill = "#fe9929") +
+  geom_segment(aes(x = 64.5-3*2.5, xend = 64.5 + 3*2.5, y = 0.025, yend = 0.025), lty = 3) +
+  geom_label(aes(x = 64.5, y = 0.025), label = "99.7%", fill = "#ec7014") 
+  
+
+p1
+```
+
+### Calculations using the 68-95-99.7 rule
+$\mu=64.5$ inches and standard deviation $\sigma=2.5$ inches
+
+- What calculations could you do with just the $\mu$ and $\sigma$ values and this rule?
+
+- P(62 < H < 67) = ?
+- P(H > 62) = ?
+
+- Thinking back to the article about height - who would we consider "taller than normal" in these data?
+
+## Finding Normal probabilities
+
+### Finding Normal probabilities
+
+- A cumulative probability for a value x in a distribution is the proportion of 
+observations in the distribution that lie at or below x.
+- Here is the cumulative probability for x=1.2
+
+```{r, out.width="70%", echo=F}
+ggplot(data = data.frame(x = c(-4, 4)), aes(x)) +
+  geom_area(stat = "function", fun = dnorm, args = list(mean = 0, sd = 1), fill = "#ec7014", xlim = c(-4, 1.2)) +
+  theme_minimal(base_size = 15) +
+  stat_function(fun = dnorm, args = list(mean = 0, sd = 1)) +
+  geom_segment(x = 1.2, xend = 1.2, y = 0 , yend = 0.195) + 
+  scale_x_continuous(breaks = -4:4) + 
+  labs(y = "density")
+```
+
+### Finding Normal probabilities
+
+- Recall that 100% of the sample space for the random variable x lies under the 
+probability density function.
+- What is the amount of the area that is below x = 1.2?
+- To answer this question we use the `pnorm()` function:
+
+```{r cumulative-prob-below}
+pnorm(q = 1.2, mean = 0, sd = 1)
+```
+
+### Finding Normal probabilities
+
+What if we wanted the reverse: P(x>1.2)?
+
+```{r, out.width="70%", echo=F}
+ggplot(data = data.frame(x = c(-4, 4)), aes(x)) +
+  geom_area(stat = "function", fun = dnorm, args = list(mean = 0, sd = 1), fill = "#ec7014", xlim = c(1.2, 4)) +
+  theme_minimal(base_size = 15) +
+  stat_function(fun = dnorm, args = list(mean = 0, sd = 1)) +
+  geom_segment(x = 1.2, xend = 1.2, y = 0 , yend = 0.195) + 
+  scale_x_continuous(breaks = -4:4) + labs(y = "density")
+```
+
+```{r probability-above}
+1 - pnorm(q = 1.2, mean = 0, sd = 1)
+```
+
+Alternatively: 
+
+```{r alternative-prob-above}
+ pnorm(q = 1.2, mean = 0, sd = 1, lower.tail = F)
+```
+
+So, 11.51% of the data is above x=1.2.
+
+### Finding Normal probabilities
+
+What if we wanted two "tail" probabilities?: $P(x< -1.2 \text{ or } x>1.2)$?
+
+```{r, echo=F, out.width="70%"}
+ggplot(data = data.frame(x = c(-4, 4)), aes(x)) +
+  geom_area(stat = "function", fun = dnorm, args = list(mean = 0, sd = 1), fill = "#ec7014", xlim = c(1.2, 4)) +
+  geom_area(stat = "function", fun = dnorm, args = list(mean = 0, sd = 1), fill = "#ec7014", xlim = c(-4, -1.2)) +
+  theme_minimal(base_size = 15) +
+  stat_function(fun = dnorm, args = list(mean = 0, sd = 1)) +
+  geom_segment(x = 1.2, xend = 1.2, y = 0 , yend = 0.195) + 
+  geom_segment(x = -1.2, xend = -1.2, y = 0 , yend = 0.195) + 
+  scale_x_continuous(breaks = -4:4) + labs(y = "density")
+```
+
+### Finding Normal probabilities
+
+The trick: find one of the tails and then double the area because the distribution
+is symmetric:
+
+```{r}
+pnorm(q = -1.2, mean = 0, sd = 1)*2
+```
+
+### Finding Normal probabilities
+
+What if we wanted a range in the middle?: $P(-0.8 < x < 1.5)$?
+
+```{r, echo=F, out.width="80%"}
+ggplot(data = data.frame(x = c(-4, 4)), aes(x)) +
+  geom_area(stat = "function", fun = dnorm, args = list(mean = 0, sd = 1), fill = "#ec7014", xlim = c(-0.8, 1.5)) +
+  theme_minimal(base_size = 15) +
+  stat_function(fun = dnorm, args = list(mean = 0, sd = 1)) +
+  geom_segment(x = 1.5, xend = 1.5, y = 0 , yend = 0.13) + 
+  geom_segment(x = -0.8, xend = -0.8, y = 0 , yend = 0.29) + 
+  scale_x_continuous(breaks = -4:4) + labs(y = "density")
+```
+
+### Finding Normal probabilities
+
+```{r steps}
+# step 1: calculate the probability *below* the upper bound (x=1.5)
+pnorm(q = 1.5, mean = 0, sd = 1)
+# step 2: calculate the probability *below* the lower bound (x = -0.8)
+pnorm(q = -0.8, mean = 0, sd = 1)
+# step 3: take the difference between these probabilities 
+pnorm(q = 1.5, mean = 0, sd = 1) - pnorm(q = -0.8, mean = 0, sd = 1)
+```
+
+Thus, 72.13% of the data is in the range -0.8 < x < 1.5.
+
+### Your turn 
+
+To diagnose osteoporosis, bone mineral density is measured. The WHO criterion for 
+osteoporosis is a BMD score below -2.5. Women in their 70s have a much lower BMD
+than younger women. Their BMD ~ N(-2, 1). What proportion of these women have a
+BMD below the WHO cutoff?
+
+```{r osteoporosis, echo=FALSE}
+#to fill in during class
+
+pnorm(q=-2.5, mean=-2, sd= 1 )
+```
+
+
+## Finding Normal percentiles
+
+### Finding Normal percentiles
+
+Recap: so far, we have calculated the *probability* using `pnorm()` given 
+specific values for x.
+
+Sometimes we want to go in the opposite direction: We might be given the 
+probability within some range and tasked with finding the corresponding x-values.
+
+### Finding Normal percentiles
+
+Example: The hatching weights of commercial chickens can be modeled accurately
+using a Normal distribution with mean $\mu=45$ grams and standard deviation 
+$\sigma=4$ grams. What is the third quartile of the distribution of hatching 
+weights?
+
+```{r, echo=F, out.width="70%"}
+ggplot(data = data.frame(x = c(29, 61)), aes(x)) +
+  geom_area(stat = "function", fun = dnorm, args = list(mean = 45, sd = 4), fill = "#ec7014", xlim = c(29, 47.7)) +
+  theme_minimal(base_size = 15) +
+  stat_function(fun = dnorm, args = list(mean = 45, sd = 4)) +
+  geom_segment(x = 47.69796, xend = 47.69796, y = 0 , yend = 0.08) + 
+  labs(y = "density") +
+  geom_text(aes(x = 44, y = 0.05), check_overlap = T, label = "75%", col = "white", size = 8) 
+```
+
+### Finding Normal percentiles using the `qnorm()` function
+
+Example: The hatching weights of commercial chickens can be modeled accurately
+using a Normal distribution with mean $\mu=45$ grams and standard deviation 
+$\sigma=4$ grams. What is the third quartile of the distribution of hatching 
+weights?
+
+```{r}
+qnorm(p = 0.75, mean = 45, sd = 4)
+```
+
+Thus, 75% of the data is below 47.7 for this distribution.
+
+
+## The standard normal and Z scores
+
+### Convert to a standard
+A normal distribution can have an infinite number of possible values for its mean and sd. 
+
+It would be impossible to tabulate the area associated with each and every normal curve
+
+So instead of doing the impossible, we convert to the **Standard Normal** Distribution
+ 
+### The standard Normal distribution
+- The standard Normal distribution N(0,1) has $\mu = 0$ and $\sigma=1$.
+- $X \sim N(0,1)$, implies that the random variable X is Normally distributed.
+
+```{r, echo=F, out.width="75%"}
+p1 <- ggplot(data = data.frame(x = c(-3, 3)), aes(x)) +
+  stat_function(fun = dnorm, n = 101, args = list(mean = 0, sd = 1), col = "orange") +
+  labs(y = "density", x = "") + 
+  geom_text(aes(x = 0, y = 0.45), label = "mean = 0 \nsd = 1", check_overlap = T, col = "orange") +
+  theme_minimal(base_size = 15) +
+  geom_segment(aes(x = 0 , y = 0, xend = 0, yend = 0.4)) +
+  geom_segment(aes(x = 1 , y = 0, xend = 1, yend = 0.25), lty = 2) +
+  geom_segment(aes(x = -1 , y = 0, xend = -1, yend = 0.25), lty = 2) +
+  geom_segment(aes(x = 2 , y = 0, xend = 2, yend = 0.05), lty = 3) +
+  geom_segment(aes(x = -2 , y = 0, xend = -2, yend = 0.05), lty = 3) +
+  scale_x_continuous(breaks = -3:3, 
+                     labels = c(-3, "-2\n-2 SD", "-1\n-1 SD", "0\nmean", "1\n+1 SD", "2\n+2 SD", 3))
+p1
+```
+
+### Standardizing Normally distributed data
+
+- Any random variable that follows a Normal distribution can be standardized
+- If $x$ is an observation from a distribution that has a mean $\mu$ and a 
+standard deviation $\sigma$, 
+
+$$z = \frac{x-\mu}{\sigma}$$
+   
+### What's the Z 
+
+By converting our variable of interest $X$ to $Z$ we can use the probabilities of the standard normal probability distribution to estimate the probabilities associated with $X$.
+
+- A standardized value is often called a **z-score**
+- Interpretation: $z$ is the number of standard deviations that $x$ is above or
+below the mean of the data.
+
+### Standardizing Normally distributed data
+
+```{r, out.width="80%", echo=F, fig.align='center'}
+knitr::include_graphics("Ch11_Intergrowth-ex.png")
+```
+
+### Standardizing Normally distributed data
+
+```{r, out.width="80%", echo=F, fig.align='center'}
+knitr::include_graphics("Ch11_Birthweight.png")
+```
+
+[Reference](https://intergrowth21.tghn.org/site_media/media/articles/newbornsize.pdf)
+
+### Standardizing Normally distributed data
+```{r, out.width="80%", echo=F, fig.align='center'}
+knitr::include_graphics("boyz.png")
+```
+
+[Birthweight z-scores for boys](https://intergrowth21.tghn.org/site_media/media/articles/INTERGROWTH-21st_Birth_Weight_Z_Scores_Boys_1.pdf)
+- How does this relate to what you see on the previous slide?
+
+## Simulating Normally distributed data in R
+
+### Simulating Normally distributed data in R
+
+Suppose that we measured 1000 heights for young women:
+
+```{r simulate-height-data}
+#students, rnorm() is important to know!
+heights.women <- rnorm(n = 1000, mean = 64.5, sd = 2.5)
+heights.women <- data.frame(heights.women)
+```
+
+### Simulating Normally distributed data in R
+We can plot the histogram of the heights, and see that they roughly follow from
+a Normal distribution:
+
+```{r plot heights, out.width="80%", echo=F, warning=F, message=F}
+hist <- ggplot(heights.women, aes(x = heights.women)) + geom_histogram(col = "white") + theme_minimal(base_size = 15) 
+
+dens <- ggplot(heights.women, aes(x = heights.women)) + geom_density() + stat_function(fun = dnorm, args = c(mean = 64.5, sd = 2.5), col = "forest green") + theme_minimal(base_size = 15)
+
+hist + dens + plot_layout()
+```
+
+### Standardizing Normally distributed data in R
+
+To standard these data, we can apply the formula to compute the z-value:
+
+```{r compute-z-value}
+heights.women <- heights.women %>% mutate(mean = mean(heights.women), 
+                                          sd = sd(heights.women), 
+                                          z = (heights.women - mean)/sd)
+
+head(heights.women)
+```
+
+What would the distribution of the standardized heights look like?
+
+### Standardizing Normally distributed data in R
+
+```{r plot-z-scores, warning=F, message=F, out.width="80%", echo=F, }
+hist_z <- ggplot(heights.women, aes(x = z)) + geom_histogram(col = "white") + 
+  theme_minimal(base_size = 15) 
+
+dens_z <- ggplot(heights.women, aes(x = z)) + geom_density() + 
+  stat_function(fun = dnorm, args = c(mean = 0, sd = 1), col = "forest green") + 
+  theme_minimal(base_size = 15)
+
+hist_z + dens_z + plot_layout()
+```
+
+
+### Recap of functions used
+
+- `rnorm(n = 100, mean = 2, sd = 0.4)`, to generate Normally distributed data 
+from the specified distribution
+- `pnorm(q = 1.2, mean = 0, sd = 2)`, to calculate the cumulative probability below
+a given value
+- `qnorm(p = 0.75, mean = 0, sd = 1)` to calculate the x-value for which some 
+percent of the data lies below it
+
+### Comic Relief
+
+```{r, out.width="40%", echo=F}
+knitr::include_graphics("paranormal.png")
+```
+
