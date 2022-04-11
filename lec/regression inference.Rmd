@@ -1,0 +1,654 @@
+---
+title: "Continous-continous and regressions"
+output:
+  beamer_presentation:
+    slide_level: 3
+  ioslides_presentation: default
+  slidy_presentation: default
+header-includes:
+- \usetheme{Goettingen}
+- \renewcommand{\textbf}{\structure}
+- \renewcommand{\mathbf}{\structure}
+- \addtobeamertemplate{navigation symbols}{}{ \usebeamerfont{footline} }
+- \addtobeamertemplate{navigation symbols}{}{ \usebeamercolor[fg]{footline} }
+- \addtobeamertemplate{navigation symbols}{}{ \insertframenumber/\inserttotalframenumber
+  }
+- \usepackage[os=win]{menukeys}
+- \usepackage{soul}
+- \usepackage{xcolor}
+- \usepackage{caption}
+- \usepackage[os=win]{menukeys}
+- \usepackage{copyrightbox}
+classoption: aspectratio=169
+---
+
+<!-- libraries -->
+```{r,include=FALSE,purl=FALSE}
+library(knitr) # for include_graphics() 
+library(dplyr)
+library(forcats)
+library(readr)
+library(ggplot2)
+library(broom) 
+library(tidyr)
+library(ggplot2)
+library(tibble)
+```
+
+
+
+### Roadmap
+So for in part 2:
+
+- continuous outcomes by categories (ie continuous outcome, categorical predictor)
+
+Next up:
+
+- continuous outcomes with continuous predictors
+- a brief touch on multiple predictor variables with one continuous outcome
+
+## Recap of part 1 (chapters 3,4, lectures 4,5,6)
+
+### Reminder of what we've done with continous vs continous variables in Part I of the course:
+
+- Graph the data: scatter plot of the relationship between X and Y 
+    - Does the relationship look linear? If so, what is the correlation coefficient, $\hat{r}$?
+    - If not, can we transform X, Y, or both to have a linear relationship on the
+    transformed scale?
+- Fit the line of best fit using `lm()`
+- Using `glance()` and `tidy()` from the library `broom` to summarize the linear
+model findings
+- Interpret the slope ($\hat{b}$) and intercept ($\hat{a}$) parameters
+- Interpret the $\hat{r}^2$ value
+
+### Recap:  Visualizing continous-continous relationships
+- Scatterplots are a good way to visualize a relationship between two continuous variables
+
+- When we look at a scatterplot we want to evaluate:
+  - The overall Pattern of the dots
+  - Any notable exceptions to the pattern
+  - Direction (positive or negative)
+  - Form (straight line or curved)
+  - Strength (how closely the points follow a line)
+  - Are there any obvious outliers
+
+### Scatterplot Syntax in R
+  
+ **name of plot** <- ggplot(data = **dataset**, aes(x = **xvariable**, y = **yvariable**)) + 
+ 
+  geom_point(na.rm=TRUE) + theme_minimal(base_size = 15)+
+ 
+  labs(x = "**xlabel**", 
+       y = "**ylabel**",
+       title = "**Title**")
+
+### Remember the Manatees?
+
+Manatee data set from your textbook:
+```{r import.mana.data, message=FALSE, echo=TRUE}
+mana_data <- read_csv("Ch03_Manatee-deaths.csv")
+head(mana_data)
+mana_scatter <- ggplot(data = mana_data, aes(x = powerboats, y = deaths)) + 
+  geom_point() + theme_minimal(base_size = 15)
+```
+
+### Remember the Manatees?
+```{r, echo=FALSE, out.width="80%"}
+mana_scatter
+```
+
+### Recap:  Pearson's 
+- Pearson's correlation coefficient measures **linear association** between two continuous variables
+- It characterizes the extent to which the points cluster around a straight line
+- the correlation coefficient can take on any value between -1 to 1 (inclusive)
+    - -1: A perfect, negative linear association
+    - 1: A perfect, positive linear association
+    - 0: No linear association 
+- usually we use **$\rho$** when referring to the correlation in a **population** and **$r$** when referring to the correlation observed in a **sample**
+
+### Recap:  Pearson's 
+```{r}
+mana_cor <- mana_data %>% 
+  summarize(corr_mana = cor(powerboats, deaths))
+mana_cor
+```
+
+### lm() of manatee deaths and powerboat purchases
+Calculate the line of best fit: 
+```{r run-linear-model-mana, out.width="80%"}
+mana_lm <- lm(deaths ~ powerboats, mana_data)
+# we use the package broom to look at the output of the linear model
+tidy(mana_lm) 
+```
+
+### Interpreting the intercept and slope
+
+```{r, out.width="90%", echo=F}
+tidy(mana_lm)
+```
+- Intercept: The predicted number of deaths if there were no powerboats. 
+- Slope: A one unit change in the number of powerboats registered (X 1,000) is 
+associated with an increase of manatee deaths of 0.1358. That is, an increase in 
+the number of powerboats registered by 1,000 is association with 0.1358 more 
+manatee deaths.
+
+
+### Getting the R-squared from your model
+
+When we run a linear model, the r-squared is also calculated. Here is how to see the r-squared for the manatee data:
+
+```{r, glance-at-model}
+glance(mana_lm)
+```
+
+Focus on:
+
+- Column called `r.squared` values only.
+- Interpretation of r-squared: The fraction of the variation in the values of y
+that is explained by the line of best fit.
+
+
+### Correlation vs R Squared
+```{r calc-corr}
+mana_cor <- mana_data %>% 
+  summarize(corr_mana = cor(powerboats, deaths))
+mana_cor
+glance(mana_lm)
+```
+
+## Regression and assuptions needed for inference
+
+### What are the regression "statistics?"
+When we are estimating values from a sample, we often put a "hat" on them.
+
+- $\hat{e}$, $\hat{r}^2$, $\hat{a}$, and $\hat{b}$ are all statistics based on 
+the sample we chose. That is, if we chose a different SRS and re-plotted the data
+and re-run the regression, we would expect their values to change somewhat.
+- When we are specifically interested in the **effect** of some explanatory variable
+$x$ on $y$, then our main interest is often in the underlying parameter $b$, the
+slope coefficient for $x$.
+- For now, we interpret $b$ as an **association** rather than a causal effect 
+because we have not learned in this class how to build causal models. 
+- Today we revisit the output from regression models and apply the inference 
+techniques from Part III of the course to regression.
+
+### Assumptions that require checking for regression inference
+
+- The way we state the assumptions is different from the text book
+- Focus on the four assumptions stated on the next slide, **not** the textbook's 
+version
+
+### Assumptions that require checking for regression inference
+
+1. The relationship between x and y is linear in the population
+2. y varies Normally about the line of best fit. That is, the residuals vary Normally
+around the line of best fit. 
+3. Observations are independent. Often we can't check this using a plot, it is 
+based on what we know about the study design.
+4. The standard deviation of the responses is the same for all values of x
+
+Except for #3, these assumptions can be investigated by examining the **estimated residuals**
+
+We also use these plots to keep an eye out for **outliers**, which can sometimes
+have a larger effect on $\hat{a}$ and $\hat{b}$
+
+
+### Terminology needed to understand the assumptions
+
+Observed value: $y$
+
+Fitted value: $\hat{y} = \hat{a} + \hat{b}x$
+
+Estimated residuals: 
+
+$\hat{e} = \text{observed value - fitted value}$
+
+$\hat{e} = y - (\hat{a} + \hat{b}x)$
+
+
+### Terminology needed to understand the assumptions, visualized
+
+```{r, out.width="80%", fig.align='center', echo=F}
+knitr::include_graphics("Ch23_Fitted-vs-resid.JPG")
+```
+
+### Example 1: Investigating the assumptions
+
+```{r lm-diagnostics_no-violations-example, fig.align='center', out.width="80%", echo=F, warning=F, message=F}
+library(broom)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+# students, don't worry about the code in the next six lines.
+# I will provide the required code later in the slides.
+set.seed(123)
+x <- seq(1, 10, length.out = 60)
+y <- 12 + 2.5 * x + rnorm(n = 60, mean = 0, sd = 2)
+dat1 <- data.frame(x, y)
+
+lm1 <- lm(y~x, data = dat1)
+augmented_dat1 <- augment(lm1)
+
+## Fitted model
+plot1 <- ggplot(augmented_dat1, aes(x, y)) +
+  geom_smooth(method = "lm", se = F) +
+  geom_point() +
+  geom_segment(aes(xend = x, yend = .fitted), lty = 2) +
+  theme_minimal(base_size = 15) +
+  labs(title = "(a) Scatter plot") 
+
+# QQ plot
+plot2 <- ggplot(augmented_dat1, aes(sample = .resid)) + 
+  geom_qq() + 
+  geom_qq_line() +
+  theme_minimal(base_size = 15) +
+  labs(y = "Residuals", x = "Theoretical quantiles", title = "(b) QQplot") 
+
+## Fitted vs. residuals
+plot3 <-ggplot(augmented_dat1, aes(y = .resid, x = .fitted)) + 
+  geom_point() + 
+  theme_minimal(base_size = 15) +
+  geom_hline(aes(yintercept = 0)) +
+  labs(y = "Residuals", x = "Fitted values", title = "(c) Fitted vs. residuals") 
+
+## Amount explained
+reshape <- augmented_dat1 %>% select(.resid, y) %>%
+  gather(key = "type", value = "value", y, .resid)
+
+plot4 <- ggplot(reshape, aes(y = value)) + 
+  geom_boxplot(aes(fill = type)) +
+  labs(title = "(d) Amount explained") +
+  theme_minimal(base_size = 15) 
+
+library(patchwork)
+plot1 + plot2 + plot3 + plot4 + plot_layout(nrow = 2) + 
+  plot_annotation(caption = "A good fit to the data")
+```
+
+### Some information about each of the four plots
+
+Plot (a) shows a fitted regression line and the data. The estimated residuals are 
+shown by the dashed lines. We want to see that the residuals are sometimes positive
+and sometimes negative with no trend in their location
+
+Plot (b) shows a QQ plot of the residuals (to check if they're Normally distributed)
+
+Plot (c) shows a plot of the fitted values vs. the residuals. We want this to look like
+a random scatter. If their is a pattern then an assumption has been violated. We 
+will shown examples of this.
+
+Plot (d) shows a boxplot of the distribution of y vs. the distribution of the residuals.
+If x does a good job describing y, then the box plot for the residuals will be 
+much shorter because the model fit is good
+
+### Example 1: Investigating the assumptions
+
+- Plot (a): The residuals are sometimes positive and sometimes negative and their
+magnitude varies randomly as x increases
+- Plot (b): The residuals appear to be Normally distributed
+- Plot (c): A random scatter - good
+- Plot (d): The model fits the data well because the variation in the residuals 
+is much smaller than the variation in the y variable to begin with.
+
+### Example 2: Investigating the assumptions
+
+```{r lm-diagnostics_violation-linearity-example, fig.align='center', out.width="80%", echo=F}
+x2 <- seq(1, 10, length.out = 60)
+y2 <- 12 + 2.5 * x2 + 1.2 * x2^2 + rnorm(n = 60, mean = 0, sd = 3) #the linearity assumption is violated
+dat2 <- data.frame(x2, y2)
+
+lm2 <- lm(y2 ~ x2, data = dat2)
+augmented_dat2 <- augment(lm2)
+
+## Fitted model
+plot1_2 <- ggplot(augmented_dat2, aes(x2, y2)) +
+  geom_smooth(method = "lm", se = F) +
+  geom_point() +
+  geom_segment(aes(xend = x2, yend = .fitted), lty = 2) +
+  theme_minimal(base_size = 15) +
+  labs(title = "(a) Scatter plot") 
+
+# QQ plot
+plot2_2 <- ggplot(augmented_dat2, aes(sample = .resid)) + 
+  geom_qq() + 
+  geom_qq_line() +
+  theme_minimal(base_size = 15) +
+  labs(y = "Residuals", x = "Theoretical quantiles", title = "(b) QQplot")
+
+## Fitted vs. residuals
+plot3_2 <-ggplot(augmented_dat2, aes(y = .resid, x = .fitted)) + 
+  geom_point() + 
+  theme_minimal(base_size = 15) +
+  geom_hline(aes(yintercept = 0)) +
+  labs(y = "Residuals", x = "Fitted values", title = "(c) Fitted vs. residuals")
+
+## Amount explained
+reshape_2 <- augmented_dat2 %>% select(.resid, y2) %>%
+  gather(key = "type", value = "value", y2, .resid)
+
+plot4_2 <- ggplot(reshape_2, aes(y = value)) + 
+  geom_boxplot(aes(fill = type)) +
+  theme_minimal(base_size = 15) +
+  labs(title = "(d) Amount explained") 
+
+plot1_2 + plot2_2 + plot3_2 + plot4_2 + plot_layout(nrow = 2) + 
+  plot_annotation(caption = "The linear systematic assumption does not hold")
+```
+
+### Example 2: Investigating the assumptions
+
+- Plot (a): While the residuals are small there is a pattern: they start positive,
+then turn negative and become positive again (as x increases). 
+- Plot (b): The QQ plot does not support Normality because it is much different
+from a line
+- Plot (c): There is a trend in the residuals vs. fitted. This accentuates the 
+pattern observed in plot (a)
+- Plots (a)-(c) all provide evidence against the assumption that a linear fit is
+the most appropriate one. Because the fit is actually curved, this relationship
+would require a $x^2$ term in the model, i.e., $\hat{y} = \hat{a} + \hat{b}x + \hat{c}x^2$
+- Plot (d): However, even though the linearity assumption is violated, the linear
+model still explains a lot of the variation so it still offers insight into 
+explaining y, even if it isn't the best model
+
+### Example 3: Investigating the assumptions
+
+```{r lm-diagnostics_violation-sd, fig.align='center', out.width="80%", echo=F}
+x3 <- seq(1, 10, length.out = 60)
+y3 <- 12 + 2.5 * x3 + rnorm(n = 60, mean = 0, sd = 2*x3) #the constant variance assumption is violated
+dat3 <- data.frame(x3, y3)
+
+lm3 <- lm(y3 ~ x3, data = dat3)
+augmented_dat3 <- augment(lm3)
+
+
+## Fitted model
+plot1_3 <- ggplot(augmented_dat3, aes(x3, y3)) +
+  geom_smooth(method = "lm", se = F) +
+  geom_point() +
+  geom_segment(aes(xend = x3, yend = .fitted), lty = 2) +
+  theme_minimal(base_size = 15) +
+  labs(title = "(a) Scatter plot")
+
+# QQ plot
+plot2_3 <- ggplot(augmented_dat3, aes(sample = .resid)) + 
+  geom_qq() + 
+  geom_qq_line() +
+  theme_minimal(base_size = 15) +
+  labs(y = "Residuals", x = "Theoretical quantiles", title = "(b) QQplot")
+
+## Fitted vs. residuals
+plot3_3 <-ggplot(augmented_dat3, aes(y = .resid, x = .fitted)) + 
+  geom_point() + 
+  theme_minimal(base_size = 15) +
+  geom_hline(aes(yintercept = 0)) +
+  labs(y = "Residuals", x = "Fitted values", title = "(c) Fitted vs. residuals") 
+
+## Amount explained
+reshape_3 <- augmented_dat3 %>% select(.resid, y3) %>%
+  gather(key = "type", value = "value", y3, .resid)
+
+plot4_3 <- ggplot(reshape_3, aes(y = value)) + 
+  geom_boxplot(aes(fill = type)) +
+  theme_minimal(base_size = 15) +
+  labs(title = "(d) Amount explained")
+
+plot1_3 + plot2_3 + plot3_3 + plot4_3 + plot_layout(nrow = 2) + 
+  plot_annotation(caption = "The constant variance assumption does not hold")
+```
+
+### Example 3: Investigating the assumptions
+ 
+- Plot (a): This might look okay at first glance, but notice that the magnitude
+of the residuals is very small for x-values < 2.5, and then it increases
+- Plot (b): Also shows some issues in the upper tail
+- Plot (c): There is a definite pattern in this plot known as "fanning out". Here,
+we see that as the fitted value increases, the residuals become further from 0.
+ 
+### A note on these diagnostic plots
+
+- If you chose a different sample, the diagnostic plots would change
+- Be careful not to over interpret them
+- Our goal is to learn about the population, but we only have our one sample
+
+### A note on these diagnostic plots
+
+- Regression procedures are not too sensitive to lack of Normality
+- Outliers are important though because they have the potential to have a large
+effect on the intercept and/or slope terms.
+
+
+
+## Hypothesis testing for regression
+
+
+### Hypothesis testing for regression
+
+What are the null and alternative hypotheses?
+
+### Hypothesis testing for regression
+
+$H_0: b=0$ (i.e., There is no association between temperature and the frequency of mating calls)
+
+$H_a: b\neq 0$ (i.e., There is an association between temperature and the frequency of mating calls)
+
+side note: your book has a section on "Testing lack of correlation" please ignore this section
+
+
+### Frog data showing the estimates slope vs. null hypothesis slope
+
+```{r, fig.align='center', out.width="80%", echo=FALSE }
+library(tibble)
+
+frog_data <- tibble(id = 1:20,
+       temp = c(19, 21, 22, 22, 23, 23, 23, 23, 23, 
+                24, 24, 24, 24,
+                25, 25, 25, 25, 26, 26, 27),
+       freq = c(38, 42, 45, 45, 41, 45, 48, 50, 53, 51, 48, 53, 47,
+                53, 49, 56, 53, 55, 55, 54))
+frog_lm <- lm(formula = freq ~ temp, data = frog_data)
+```
+```{r, echo=F, fig.align='center', out.width="80%", echo=FALSE}
+ggplot(frog_data, aes(x = temp, y = freq)) +
+  theme_minimal(base_size = 15) +
+  labs(x = "Temperature (Celcius)", y = "Frequency of mating calls") + 
+  geom_hline(aes(yintercept = 47), col = "red") +
+  geom_text(aes(x = 20, y = 48), label = "Null hypothesis slope", col = "red", check_overlap = T) +
+  geom_smooth(method = "lm", se = F) +
+  geom_text(aes(x = 20, y = 43), label = "Estimated slope", col = "blue", check_overlap = T) +
+  geom_point()
+```
+
+### Hypothesis testing for regression
+- The regression standard error is used as part of the test statistic for the 
+slope coefficient
+
+To test the null hypothesis, the t-test statistic is:
+
+$$t = \frac{\hat{b}}{SE_b}$$
+
+where $SE_b = \frac{s}{\sqrt{\sum(x-\bar{x})^2}}$ and $s = \sqrt{\frac{1}{n-2}\sum_{i=1}^{n}{(y-\hat{y})^2}}$
+
+We will use R to compute the test statistic, $SE_b$ and $s$. Be sure you know where
+all of these values come from and which functions we use to run a linear model
+and print these values.
+
+### Two-sided hypothesis testing for regression using `tidy()`
+
+```{r}
+tidy(frog_lm)
+```
+
+Focus on the row of data for `temp`:
+
+- `estimate` is the estimated slope coefficient $\hat{b}$: 2.33
+- `std.error` is the standard error, $SE_b = 0.347$
+- `statistic` is the t-test statistic: $\frac{\hat{b}}{{SE}_b} = 2.330816/0.3467893 = 6.72$
+- The test has $n-2$ degrees of freedom, where $n$ is the number of observations
+in the data frame.
+- `p-value` is the p-value corresponding to the test
+
+### p value for the slope
+Remember we can check this in R using our pt() function
+
+- `statistic` is the t-test statistic: $\frac{\hat{b}}{{SE}_b} = 2.330816/0.3467893 = 6.72$
+- The test has $n-2$ degrees of freedom, where $n$ is the number of observations (in our frog data n=20)
+    
+```{r}
+pt(q = 6.7211302, df = 18, lower.tail = F)*2
+```
+
+## Confidence intervals for regression coefficient
+
+### Confidence intervals for the regression coefficient
+
+We can also use the output from `tidy(your_lm)` to create a 95% confidence 
+interval for the slope coefficient. 
+
+$\text{estimate}\pm \text{margin of error}$
+
+$\hat{b} \pm t^*{SE}_b$
+
+Where $t^*$ is the critical value for the t distribution with $n-2$ degrees of 
+freedom with area C (e.g., 95%) between $-t^*$ and $t^*$.
+
+### Confidence intervals for the regression coefficient
+
+First, find the critical value $t^*$, such that 95% of the area is between $t^*$
+and $-t^*$: **notice the p value I am entering - why is this not .95?**
+```{r}
+t_star<-qt(p = 0.975, df = 18)
+t_star
+```
+
+95% CI:
+
+$2.330816 \pm t^*0.3467893$ or  $2.330816 \pm 2.100922\times0.3467893$
+
+95% CI: 1.60 to 3.06
+
+Interpretation: The estimate for the slope coefficient is 2.33 (95% CI: 1.60-3.06).
+We found this interval using a method that gives an interval that captures the 
+true population slope parameter ($b$) 95% of the time.
+
+## Inference for prediction
+
+### Inference for prediction
+
+- So far we've learned only about inference for the regression coefficient
+- But what if you wanted to use the model to make a prediction?
+- We already know how to predict the **average** number of mating calls 
+corresponding to a specific $x$ value, say of 21 degrees Celsius:
+
+$\hat{y} = -6.190332 + 2.330816x$
+
+$\hat{y} = -6.190332 + 2.330816(21) = 42.8$
+
+We expect 42.8 mating calls, so 43 mating calls (rounding because the outcome is
+a discrete variable) when the temperature is 21 degrees Celsius.
+
+### Inference for prediction
+
+How do we make a confidence interval for this prediction?
+
+- It depends on whether you want to make a CI for the **average response** or for
+an **individual's response**
+
+```{r, echo=F, fig.align='center', out.width="65%"}
+ggplot(frog_data, aes(x = temp, y = freq)) +
+  theme_minimal(base_size = 15) +
+  labs(x = "Temperature (Celcius)", y = "Frequency of mating calls") + 
+  geom_smooth(method = "lm", se = F) +
+  geom_vline(aes(xintercept = 21), col = "orange", lty = 2)+
+  geom_point(aes(x = 21, y = 42.8), col = "orange") +
+  geom_point()
+```
+
+### Inference for prediction
+
+If you want to make inference for the **mean response $\mu_y$** when $x$ takes the value
+$x^*$ (x*=21 in our example):
+
+$\hat{y} \pm t*SE_{\hat{\mu}}$, where $SE_{\hat{\mu}}=s\sqrt{\frac{1}{n} + \frac{(x^*-\bar{x})^2}{\sum(x-\bar{x})^2}}$
+
+If you want to make inference for a **single observation $y$** when $x$ takes the value
+$x^*$ (x*=21 in our example):
+
+$\hat{y} \pm t*SE_{\hat{y}}$, where $SE_{\hat{y}}=s\sqrt{1 + \frac{1}{n} + \frac{(x^*-\bar{x})^2}{\sum(x-\bar{x})^2}}$
+
+### Corresponding R code for `predict`ion and `confidence` interval:
+
+```{r}
+# specify the value of the explanatory variable for which you want the prediction:
+newdata = data.frame(temp = 21) 
+
+# use `predict()` to make prediction and confidence intervals
+prediction_interval <- predict(frog_lm, newdata, interval = "predict")
+prediction_interval
+
+confidence_interval <- predict(frog_lm, newdata, interval = "confidence")
+confidence_interval
+```
+
+### Inference for prediction, visualized
+
+```{r, echo=F, fig.align='center', out.width="70%"}
+plot_a <- ggplot(frog_data, aes(x = temp, y = freq)) +
+  theme_minimal(base_size = 15) +
+  labs(x = "Temperature (Celcius)", y = "Frequency of mating calls") + 
+  geom_smooth(method = "lm", se = F) +
+  geom_point(aes(x = 21, y = 42.8), col = "orange", size = 3, pch = 4) +
+  geom_segment(aes(x = 21, xend = 21, y = 40.38472, yend = 45.12887), col = "red") + # confidence interval
+  geom_point() + 
+  labs(title = "95% Confidence Interval") 
+
+plot_b <- ggplot(frog_data, aes(x = temp, y = freq)) +
+  theme_minimal(base_size = 15) +
+  labs(x = "Temperature (Celcius)", y = "Frequency of mating calls") + 
+  geom_smooth(method = "lm", se = F) +
+  geom_point(aes(x = 21, y = 42.8), col = "orange", size = 3, pch = 4) +
+  geom_segment(aes(x = 21, xend = 21, y = 36.37187, yend = 49.1473), col = "orange", alpha = 0.4) + # prediction interval
+  geom_point() + 
+  labs(title = "95% Prediction Interval") 
+
+library(patchwork)
+
+plot_a + plot_b + plot_layout()
+```
+
+- Why is the prediction interval *wider* than the confidence interval?
+
+
+
+
+### Recap on notation
+
+| Term      | Population      | Sample  |
+|-----------|:---------------:|:-------:|
+| Intercept | $a$ or $\alpha$ | $\hat{a}$ |
+| Slope     | $b$ or $\beta$  | $\hat{b}$ |
+| Residual  | $e$             | $\hat{e}$ |
+
+Note: Although many sources will use $r$ to indicate residuals, we will try to be consistent and use $e$, because we use $r$ and $r^2$ to represent the correlation coefficient and r-squared respectively and this is confusing.
+
+### Recap:  Use `lm()` + broom functions to look at your linear model
+
+- `tidy(your_lm)`: Presents the output of the linear model in a tidy way
+- `glance(your_lm)`: Takes a quick (one line) look at the fit statistics.
+- `augment(your_lm)`: Creates an augmented data frame that contains a column for
+the fitted y-values ($\hat{y}$) and the residuals ($\hat{e} = y-\hat{y}$) among other columns
+
+Know these functions, what they do, and how to use them.
+
+### Parting humor
+```{r, fig.align='center', out.width="50%", echo=FALSE }
+knitr::include_graphics("curve_fitting.png")
+```
+
+
+
+
+
+
+
+  
