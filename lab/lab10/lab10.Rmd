@@ -319,7 +319,7 @@ Once you have checked these items, you can proceed to submit your assignment.
 1. Click on the **Terminal** tab in the pane below.
 2. Copy-paste the following line of code into the terminal and press enter.
 
-cd; cd ph142-sp22/lab/lab10; python3 turn_in.py
+cd; cd phw142-sp22/lab/lab10; python3 turn_in.py
 
 3. Follow the prompts to enter your Gradescope username and password.
 4. If the submission is successful, you should see "Submission successful!" appear as the output. **Check your submission on the Gradescope website to ensure that the autograder worked properly and you received credit for your correct answers. If you think the autograder is incorrectly grading your work, please post on piazza!**
